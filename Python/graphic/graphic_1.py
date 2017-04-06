@@ -1,7 +1,7 @@
 '''
 Created on 2017年4月6日
 
-@author: LokHim
+@author: LokHim-Leung
 '''
 
 import matplotlib.pyplot as plt
