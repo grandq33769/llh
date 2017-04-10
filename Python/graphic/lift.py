@@ -12,18 +12,18 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 
-x = np.arange(0.1, 1,0.1)
-y = np.arange(0.1, 1,0.1)
-x, y = np.meshgrid(x, y)
-z = x / y
+confidence = np.arange(0.1, 1,0.1)
+probability_of_left = np.arange(0.1, 1,0.1)
+confidence, probability_of_left = np.meshgrid(confidence, probability_of_left)
+lift = confidence / probability_of_left
 
-surf = ax.plot_surface(x, y, z, cmap=cm.YlGnBu, linewidth=0, antialiased=False)
-ax.set_xlabel('x:Confidence')
-ax.set_ylabel('y:Probability of b')
-ax.set_zlabel('z:Lift')
+surf = ax.plot_surface(confidence, probability_of_left, lift, cmap=cm.YlGnBu, linewidth=0, antialiased=False)
+ax.set_xlabel('Confidence')
+ax.set_ylabel('Probability of left')
+ax.set_zlabel('Lift')
 ax.set_zlim(0,10)
 
-plt.title('z = x/y')
+plt.title('Change of Lift')
 fig.colorbar(surf, shrink=0.5, aspect=5)
 
 plt.show()
