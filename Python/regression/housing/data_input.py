@@ -1,9 +1,11 @@
 '''
-Created on 2017年4月12日
+Created on 2017�?4???12?��
 
 @author: LokHim
 '''
+
 from _io import open
+
 
 #Meta-data
 file_name = 'housing_data.txt'

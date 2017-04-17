@@ -3,11 +3,12 @@ Created on 2017年4月10日
 
 @author: LokHim
 '''
-import matplotlib.pyplot as plt
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d #@UnresolvedImport
+import numpy as np
+
 
 fig = plt.figure()
 ax = fig.gca(projection='3d')

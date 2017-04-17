@@ -3,7 +3,8 @@ Created on 2017年4月12日
 
 @author: LokHim
 '''
-import data_input as di
+from housing import data_input as di
+
 weight = -2.3272
 weight_2 = 0.0434
 bias = 42.8169

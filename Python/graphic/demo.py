@@ -1,11 +1,12 @@
 '''
-Created on 2017年4月6日
+Created on 2017�?4???6?��
 
 @author: LokHim
 '''
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 
 x = np.arange(0, 360)
 y = np.sin(x * np.pi / 180.0)
