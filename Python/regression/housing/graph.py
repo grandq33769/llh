@@ -12,7 +12,6 @@ import pylab as mpl
 # Chinese Chracter
 mpl.rcParams['font.sans-serif'] = ['heit']
 mpl.rcParams['axes.unicode_minus']
-#myfont = fm.FontProperties(fname='C:\Windows\Fonts\heit.ttf')
 
 # my result : weight:-0.95 bias: 34.54
 # my result 2 : weight:-2.3272 weight2:0.0434 bias:42.8169
