@@ -7,6 +7,7 @@ import data_input as di
 import matplotlib.pyplot as plt
 import numpy as np
 
+#Chinese Chracter
 import pylab as  mpl
 import matplotlib.font_manager as fm
 
