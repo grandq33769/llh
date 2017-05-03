@@ -1,1 +1,3 @@
 /target/
+/chromedriver.exe
+/geckodriver.exe
