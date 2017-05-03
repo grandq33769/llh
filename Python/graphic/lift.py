@@ -1,12 +1,12 @@
 '''
-Created on 2017å¹´4æœˆ10æ—¥
+Created on 2017å¹?4???10?—¥
 
 @author: LokHim
 '''
 from matplotlib import cm
 
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d #@UnresolvedImport
+from mpl_toolkits.mplot3d import axes3d  # @UnresolvedImport
 import numpy as np
 
 

@@ -1,6 +1,5 @@
 '''
-Created on 2017ï¿½?4???17?ï¿½ï¿½
+Created on 2017ï¿??4???17?ï¿½ï¿½
 
 @author: LokHim
 '''
-
