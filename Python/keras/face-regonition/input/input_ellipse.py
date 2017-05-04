@@ -17,7 +17,7 @@ def readLocation(num,data):
     locationlist = []
     for i in range(num): 
         line = data.readline()[:-4]
-        attribute = list([float(x) for x in line.split(' ')])
+        attribute = [float(x) for x in line.split(' ')]
         l = location(*attribute)
         locationlist.append(l)
     return locationlist

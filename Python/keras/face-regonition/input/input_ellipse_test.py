@@ -11,8 +11,8 @@ class Test(unittest.TestCase):
 
 
     def testLocation(self):
-        print(locationlist)
-        self.assertEqual(locationlist['2002/08/11/big/img_59'], ['123.583300 85.549500 1.265839 269.693400 161.781200'], 'Equal content')
+        list = locationdict['2002/08/11/big/img_591']
+        self.assertEqual(list[0].majorAxis, 123.583300, 'Equal content')
 
 
 if __name__ == "__main__":
