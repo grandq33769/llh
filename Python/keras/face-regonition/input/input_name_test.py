@@ -4,13 +4,16 @@ Created on 2017年5月3日
 @author: LokHim
 '''
 import unittest
+import os.path
 from input import *
 
 class Test(unittest.TestCase):
 
-    def testName(self):
-        self.assertEqual(filelist[0][0], '2002/08/11/big/img_591')
-        self.assertEqual(filelist[9][0], '2002/08/31/big/img_18008')
+    def testFileExist(self):
+        for name in fileset :
+            path = urlbase+name+'.jpg'
+            print(path)
+            self.assertTrue(os.path.exists(path), 'file not exist')
 
 
 if __name__ == "__main__":
