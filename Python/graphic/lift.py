@@ -1,8 +1,3 @@
-'''
-Created on 2017å¹?4???10?—¥
-
-@author: LokHim
-'''
 from matplotlib import cm
 
 import matplotlib.pyplot as plt
@@ -18,7 +13,7 @@ probability_of_left = np.arange(0.1, 1, 0.1)
 confidence, probability_of_left = np.meshgrid(confidence, probability_of_left)
 lift = confidence / probability_of_left
 
-surf = ax.plot_surface(confidence, probability_of_left,
+surf = ax.plot_sursface(confidence, probability_of_left,
                        lift, cmap=cm.YlGnBu, linewidth=0, antialiased=False)
 ax.set_xlabel('Confidence')
 ax.set_ylabel('Probability of left')

@@ -1,9 +1,3 @@
-'''
-Created on 2017ï¿??4???6?ï¿½ï¿½
-
-@author: LokHim
-'''
-
 import matplotlib.pyplot as plt
 import numpy as np
 
