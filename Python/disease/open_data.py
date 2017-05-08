@@ -19,12 +19,11 @@ class Data():
         self.location = location
         self.number = int(number)
 
-
     def __str__(self):
         '''return the string of data information'''
 
         return "Year:{} Month:{:2} Location:{} Number:{}"\
-              .format(self.year, self.month, self.location, self.number)
+            .format(self.year, self.month, self.location, self.number)
 
 
 with open(PATH, encoding='utf-8') as file:
