@@ -14,3 +14,4 @@ locationdict = dict()
 
 from input import input_name
 from input import input_ellipse
+from input import input_image

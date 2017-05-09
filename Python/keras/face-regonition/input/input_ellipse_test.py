@@ -8,7 +8,12 @@ from input import *
 
 
 class Test(unittest.TestCase):
-
+    def testExist(self):
+        for name in fileset:
+            if name not in locationdict:
+                print(name)
+            else:
+                self.assertTrue(name in locationdict,'Existence of element')
 
     def testLocation(self):
         list = locationdict['2002/08/11/big/img_591']

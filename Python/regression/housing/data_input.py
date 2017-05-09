@@ -1,9 +1,3 @@
-'''
-Created on 2017ï¿??4???12?ï¿½ï¿½
-
-@author: LokHim
-'''
-
 from _io import open
 
 

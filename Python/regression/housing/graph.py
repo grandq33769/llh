@@ -1,8 +1,3 @@
-'''
-Created on 2017å¹?4???12?—¥
-
-@author: LokHim
-'''
 from housing import data_input as di
 
 import matplotlib.pyplot as plt
@@ -26,6 +21,6 @@ for member in di.target_list:
     plt.scatter(member[0], member[1], color='blue')
 plt.plot(x, y, 'r')
 plt.plot(x, y2, color='#D9B611')
-plt.title(u'ä¸­æ??')
+plt.title(u'ä¸­æ–‡')
 
 plt.show()

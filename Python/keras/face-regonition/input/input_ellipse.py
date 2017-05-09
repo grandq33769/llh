@@ -3,6 +3,7 @@ Created on 2017年5月4日
 
 @author: LokHim
 '''
+import math as m 
 from input import *
 
 class location:
@@ -12,7 +13,7 @@ class location:
         self.angle = arg[2]
         self.x = arg[3]
         self.y = arg[4]
-
+        
 def readLocation(num,data):
     locationlist = []
     for i in range(num): 
