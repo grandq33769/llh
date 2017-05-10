@@ -16,6 +16,7 @@ SAMPLE_SIZE = 12
 
 def is_overlap(income, origin):
     origin = map(lambda x: x + PADDING_SIZE, list(origin))
+    # use set operation
 
 
 def location_of_face(face):
