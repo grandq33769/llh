@@ -20,7 +20,11 @@ class Test(unittest.TestCase):
                 self.assertTrue(name in LOCATION_DICT, 'Existence of element')
 
     def test_location(self):
+<<<<<<< HEAD
         '''Test case for verifying the data correctness'''
+=======
+        '''Test case for verifing the data correctness'''
+>>>>>>> d8957be4ebd5ae13e0c418a687b471b8f30378b7
         ldict = LOCATION_DICT['2002/08/11/big/img_591']
         self.assertEqual(ldict[0].major_axis, 123.583300, 'Equal content')
 
