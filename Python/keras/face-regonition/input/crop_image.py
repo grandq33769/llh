@@ -15,8 +15,16 @@ SAMPLE_SIZE = 12
 
 
 def is_overlap(income, origin):
-    origin = map(lambda x: x + PADDING_SIZE, list(origin))
-    # use set operation
+    origin = [map(lambda x: x + PADDING_SIZE, list(origin))]
+    income_x = {x for x in range(income[0], income[2] + 1)}
+    income_y = {y for y in range(income[1], income[3] + 1)}
+    origin_x = {x for x in range(origin[0], origin[2])}
+    origin_y = {y for y in range(origin[1], origin[3])}
+
+    if income_x - origin_x == income_x and income_y - origin_y == income_y:
+        return True
+    else:
+        return False
 
 
 def location_of_face(face):
