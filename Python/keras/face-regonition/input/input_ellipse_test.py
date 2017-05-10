@@ -21,7 +21,6 @@ class Test(unittest.TestCase):
 
     def test_location(self):
         '''Test case for verifying the data correctness'''
-        
         ldict = LOCATION_DICT['2002/08/11/big/img_591']
         self.assertEqual(ldict[0].major_axis, 123.583300, 'Equal content')
 

@@ -3,9 +3,7 @@ Created on 2017年5月3日
 
 @author: LokHim
 '''
-
 URLBASE = 'D:/U/105-2/Pattern Regonition/Final Project/Data/'
-
 FILESET = set()
 
 for i in range(1, 11):
