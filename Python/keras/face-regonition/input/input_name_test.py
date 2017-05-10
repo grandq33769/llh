@@ -5,13 +5,16 @@ Created on 2017年5月3日
 '''
 import unittest
 import os.path
-from input import *
+from input_name import URLBASE, FILESET
+
 
 class Test(unittest.TestCase):
+    '''Test fo file name data'''
 
-    def testFileExist(self):
-        for name in fileset :
-            path = urlbase+name+'.jpg'
+    def test_file_exist(self):
+        '''Test case for existence of image'''
+        for name in FILESET:
+            path = URLBASE + name + '.jpg'
             print(path)
             self.assertTrue(os.path.exists(path), 'file not exist')
 
