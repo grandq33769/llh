@@ -9,7 +9,7 @@ from input_name import URLBASE, FILESET
 
 
 class Test(unittest.TestCase):
-    '''Test fo file name data'''
+    '''Test for file name data'''
 
     def test_file_exist(self):
         '''Test case for existence of image'''
