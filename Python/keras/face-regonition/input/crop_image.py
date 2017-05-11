@@ -4,7 +4,7 @@ Created on 2017年5月3日
 @author: LokHim
 '''
 
-import numpy as np
+import os 
 from itertools import product
 from PIL import Image
 from input_name import FILESET, URLBASE
@@ -15,7 +15,7 @@ SAMPLE_SIZE = 12
 
 
 def is_overlap(income, origin):
-    origin = [map(lambda x: x + PADDING_SIZE, list(origin))]
+    origin = [x for x in map(lambda x: int(x + PADDING_SIZE), list(origin))]
     income_x = {x for x in range(income[0], income[2] + 1)}
     income_y = {y for y in range(income[1], income[3] + 1)}
     origin_x = {x for x in range(origin[0], origin[2])}
@@ -49,6 +49,8 @@ def crop_negative(face_list, image, image_size):
                 image_size, y_start + image_size]
         if any([is_overlap(rbox, loc) for loc in location_list]):
             pass
+        else:
+            return_list.append(rbox)
     return return_list
 
 
@@ -63,6 +65,7 @@ def crop_face(face_list, image):
     return return_list
 
 
+'''
 total = 0  # 5171
 # Crop face image
 for filename in FILESET:
@@ -78,6 +81,7 @@ for filename in FILESET:
             total += 1
 
 print(total)
+'''
 
 # Crop background image
 total = 0
@@ -89,7 +93,13 @@ for filename in FILESET:
         save_path = URLBASE + '/Input_Data/Negative/'
         for croped_neg in croped_list:
             str_index = str(total)
-            croped_neg.save(save_path + '_' + str_index + '.jpg')
+            crop_image = image.crop(tuple(croped_neg))
+            final_path = save_path + str_index + '.jpg'
+            
+            if (os.path.exists(final_path)):
+                pass
+            else:
+                crop_image.save(final_path)
             total += 1
 
-print(total)
+        print(total)
