@@ -1,7 +1,7 @@
 '''Mining Sequential Frequent Pattern'''
 import functools as ft
 from itertools import product
-from arrage import ARRANGE_LIST
+from arrange import ARRANGE_LIST
 
 RESULT_DICT = {}
 

@@ -33,5 +33,3 @@ for year in range(2003, 2017):
         if s in ARRANGE_DICT:
             loc_dict = dict_of_location(ARRANGE_DICT[s])
             ARRANGE_LIST.append(loc_dict)
-
-print(ARRANGE_LIST)
