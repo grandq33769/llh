@@ -15,6 +15,7 @@ SPACING = 4
 
 
 def is_overlap(income, origin):
+    '''A function to determine two region is it overlap'''
     origin = [x for x in map(lambda x: int(x + PADDING_SIZE), list(origin))]
     income_x = {x for x in range(income[0], income[2] + 1)}
     income_y = {y for y in range(income[1], income[3] + 1)}
@@ -28,6 +29,7 @@ def is_overlap(income, origin):
 
 
 def location_of_face(face):
+    '''return a tuple of face location (top-left and bottom-right) from face object'''
     start_x = face.xcoor - face.minor_axis
     start_y = face.ycoor - face.major_axis
     end_x = face.xcoor + face.minor_axis
@@ -38,6 +40,7 @@ def location_of_face(face):
 def crop_negative(face_list, image, image_size):
     return_set = set()
     location_set = set()
+    '''A function to crop all negative face samples from a image'''
     width, height = image.size
 
     for face in face_list:
@@ -55,6 +58,7 @@ def crop_negative(face_list, image, image_size):
 
 
 def crop_face(face_list, image, image_size, spacing):
+    '''A function to crop all face in an image'''
     return_list = []
     for face in face_list:
         sample_set = set()
@@ -68,6 +72,7 @@ def crop_face(face_list, image, image_size, spacing):
     return return_list
 
 total = 0  # 5171
+
 # Crop face image
 for filename in FILESET:
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
@@ -85,7 +90,7 @@ for filename in FILESET:
 POSITIVE_SAMPLE = total
 
 # Crop background image
-total = 0
+TOTAL = 0
 for filename in FILESET:
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
         face_list = LOCATION_DICT[filename]
