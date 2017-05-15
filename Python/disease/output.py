@@ -10,4 +10,5 @@ with open('FrequentItemSet.csv', 'w', newline='', encoding='utf-8') as file:
             line += str(name) + ','
         line += str(RESULT_DICT[member][0]) + ','
         line += str(RESULT_DICT[member][1])
-        CWRITER.writerow(line)
+        print(line)
+        # CWRITER.writerow(line)

@@ -1,5 +1,6 @@
 '''Arrange all location in a month'''
-from open_data import RAWDATA, ARRANGE_DICT
+from open_data import RAWDATA
+ARRANGE_DICT = {}
 ARRANGE_LIST = []
 
 
@@ -32,4 +33,3 @@ for year in range(2003, 2017):
         if s in ARRANGE_DICT:
             loc_dict = dict_of_location(ARRANGE_DICT[s])
             ARRANGE_LIST.append(loc_dict)
-            print(s,loc_dict)

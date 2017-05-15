@@ -3,8 +3,7 @@ Created on 2017年5月3日
 
 @author: LokHim
 '''
-
-import os 
+import os
 from itertools import product
 from PIL import Image
 from input_name import FILESET, URLBASE
@@ -21,7 +20,7 @@ def is_overlap(income, origin):
     origin_x = {x for x in range(origin[0], origin[2])}
     origin_y = {y for y in range(origin[1], origin[3])}
 
-    if income_x - origin_x == income_x and income_y - origin_y == income_y:
+    if income_x - origin_x != income_x and income_y - origin_y == income_y:
         return True
     else:
         return False
@@ -95,7 +94,7 @@ for filename in FILESET:
             str_index = str(total)
             crop_image = image.crop(tuple(croped_neg))
             final_path = save_path + str_index + '.jpg'
-            
+
             if (os.path.exists(final_path)):
                 pass
             else:
