@@ -14,6 +14,7 @@ SAMPLE_SIZE = 12
 
 
 def is_overlap(income, origin):
+    '''A function to determine two region is it overlap'''
     origin = [x for x in map(lambda x: int(x + PADDING_SIZE), list(origin))]
     income_x = {x for x in range(income[0], income[2] + 1)}
     income_y = {y for y in range(income[1], income[3] + 1)}
@@ -27,6 +28,7 @@ def is_overlap(income, origin):
 
 
 def location_of_face(face):
+    '''return a tuple of face location (top-left and bottom-right) from face object'''
     start_x = face.xcoor - face.minor_axis
     start_y = face.ycoor - face.major_axis
     end_x = face.xcoor + face.minor_axis
@@ -35,6 +37,7 @@ def location_of_face(face):
 
 
 def crop_negative(face_list, image, image_size):
+    '''A function to crop all negative face samples from a image'''
     return_list = []
     location_list = []
     width, height = image.size
@@ -54,6 +57,7 @@ def crop_negative(face_list, image, image_size):
 
 
 def crop_face(face_list, image):
+    '''A function to crop all face in an image'''
     return_list = []
     for face in face_list:
         bbox = location_of_face(face)
@@ -64,8 +68,7 @@ def crop_face(face_list, image):
     return return_list
 
 
-'''
-total = 0  # 5171
+TOTAL = 0  # 5171
 # Crop face image
 for filename in FILESET:
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
@@ -77,13 +80,12 @@ for filename in FILESET:
             index = croped_list.index(croped_face)
             str_index = str(index)
             croped_face.save(save_path + '_' + str_index + '.jpg')
-            total += 1
+            TOTAL += 1
 
-print(total)
-'''
+print(TOTAL)
 
 # Crop background image
-total = 0
+TOTAL = 0
 for filename in FILESET:
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
         face_list = LOCATION_DICT[filename]
@@ -91,14 +93,11 @@ for filename in FILESET:
         file_name = filename.replace('/', '_')
         save_path = URLBASE + '/Input_Data/Negative/'
         for croped_neg in croped_list:
-            str_index = str(total)
+            str_index = str(TOTAL)
             crop_image = image.crop(tuple(croped_neg))
             final_path = save_path + str_index + '.jpg'
 
-            if (os.path.exists(final_path)):
-                pass
-            else:
+            if (not os.path.exists(final_path)):
                 crop_image.save(final_path)
-            total += 1
-
-        print(total)
+            TOTAL += 1
+        print(TOTAL)
