@@ -48,8 +48,8 @@ def crop_negative(face_list, image, image_size):
         location_set.add(bbox)
 
     for x_start, y_start in product(range(0, width, image_size), range(0, height, image_size)):
-        rbox = [x_start, y_start, x_start +
-                image_size, y_start + image_size]
+        rbox = (x_start, y_start, x_start +
+                image_size, y_start + image_size)
         if any([is_overlap(rbox, loc) for loc in location_set]):
             pass
         else:
@@ -72,7 +72,6 @@ def crop_face(face_list, image, image_size, spacing):
     return return_list
 
 total = 0  # 5171
-
 # Crop face image
 for filename in FILESET:
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
@@ -107,5 +106,5 @@ for filename in FILESET:
         print('Negative Example: ' + str(total))
 NEGATIVE_SAMPLE = total
 
-print('Positive samples: ' + POSITIVE_SAMPLE +
-      'Negative samples: ' + NEGATIVE_SAMPLE)
+print('Positive samples: ' , POSITIVE_SAMPLE ,
+      'Negative samples: ' , NEGATIVE_SAMPLE)
