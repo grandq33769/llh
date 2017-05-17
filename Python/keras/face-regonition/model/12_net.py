@@ -3,17 +3,25 @@ Created on 2017年5月15日
 
 @author: LokHim
 '''
+
 from __future__ import print_function
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-from  import x_train, y_train, x_test, y_test
+
+import sys
+sys.path.insert(0, 'D:/Ecllipse/my-code/Python/keras/face-regonition/input')
+from input_image import x_train, y_train, x_test, y_test
 
 batch_size = 32
 num_classes = 2
 epochs = 200
-data_augmentation = False
+
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train /= 255
+x_test /= 255
 
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
@@ -42,16 +50,16 @@ model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
 
-x_train = x_train.astype('float32')
-x_test = x_test.astype('float32')
-x_train /= 255
-x_test /= 255
 
-
-print('Not using data augmentation.')
-model.fit(x_train, y_train,
+history = model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
           validation_data=(x_test, y_test),
           shuffle=True)
 
+score = model.evaluate(x_test, y_test, verbose=0)
+
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
+
+model.save('12-net.h5')
