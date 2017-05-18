@@ -9,7 +9,7 @@ import math
 from PIL import Image, ImageDraw
 from input_name import URLBASE
 from input_ellipse import LOCATION_DICT
-from input_image import angleRotate
+from crop_image import crop_face
 
 
 class Test(unittest.TestCase):
@@ -88,9 +88,17 @@ class Test(unittest.TestCase):
                 
                 new = image.rotate(ell_data.angle)
                 crop_image = new.crop(bbox)
+                crop_image.save(URLBASE + '/Example/crop_face_'+str(ed_list.index(ell_data))+'.jpg')
                 crop_image.show()
 
-            
+            croped_list = crop_face(ed_list, image, 12, 4)
+            save_path = URLBASE + '/Example/Crop/'
+            index = 0
+            for croped_face in croped_list:
+                for croped_image in croped_face:
+                    str_index = str(index)
+                    croped_image.save(save_path + '_' + str_index + '.jpg')
+                    index += 1
             image.show()
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testImage']
