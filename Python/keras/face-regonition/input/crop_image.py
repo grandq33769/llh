@@ -71,40 +71,51 @@ def crop_face(face_list, image, image_size, spacing):
         return_list.append(new.crop(rbox) for rbox in sample_set)
     return return_list
 
-total = 0  # 5171
-# Crop face image
-for filename in FILESET:
-    with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
-        face_list = LOCATION_DICT[filename]
-        croped_list = crop_face(face_list, image, SAMPLE_SIZE, SPACING)
-        file_name = filename.replace('/', '_')
-        save_path = URLBASE + '/Input_Data/Positive/' + file_name
-        for croped_face in croped_list:
-            for croped_image in croped_face:
-                str_index = '{:04d}'.format(total)
-                croped_image.save(save_path + '_' + str_index + '.jpg')
+def crop(image, image_size, spacing):
+    '''A function to crop all window in an image'''
+    return_set = []
+    width, height = image.size
+    for x_start, y_start in product(range(0, width, spacing), range(0, height, spacing)):
+        rbox = (x_start, y_start, x_start +
+                image_size, y_start + image_size)
+        return_set.append(rbox)
+    return return_set
+
+if __name__ == "__main__":
+    total = 0  # 5171
+    # Crop face image
+    for filename in FILESET:
+        with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
+            face_list = LOCATION_DICT[filename]
+            croped_list = crop_face(face_list, image, SAMPLE_SIZE, SPACING)
+            file_name = filename.replace('/', '_')
+            save_path = URLBASE + '/Input_Data/Positive/' + file_name
+            for croped_face in croped_list:
+                for croped_image in croped_face:
+                    str_index = '{:04d}'.format(total)
+                    croped_image.save(save_path + '_' + str_index + '.jpg')
+                    total += 1
+    
+            print('Positive Example: ' + str(total))
+    POSITIVE_SAMPLE = total
+    
+    # Crop background image
+    TOTAL = 0
+    for filename in FILESET:
+        with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
+            face_list = LOCATION_DICT[filename]
+            croped_set = crop_negative(face_list, image, SAMPLE_SIZE)
+            file_name = filename.replace('/', '_')
+            save_path = URLBASE + '/Input_Data/Negative/'
+            for croped_neg in croped_set:
+                str_index = str(total)
+                crop_image = image.crop(tuple(croped_neg))
+                final_path = save_path + str_index + '.jpg'
+                crop_image.save(final_path)
                 total += 1
-
-        print('Positive Example: ' + str(total))
-POSITIVE_SAMPLE = total
-
-# Crop background image
-TOTAL = 0
-for filename in FILESET:
-    with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as image:
-        face_list = LOCATION_DICT[filename]
-        croped_set = crop_negative(face_list, image, SAMPLE_SIZE)
-        file_name = filename.replace('/', '_')
-        save_path = URLBASE + '/Input_Data/Negative/'
-        for croped_neg in croped_set:
-            str_index = str(total)
-            crop_image = image.crop(tuple(croped_neg))
-            final_path = save_path + str_index + '.jpg'
-            crop_image.save(final_path)
-            total += 1
-
-        print('Negative Example: ' + str(total))
-NEGATIVE_SAMPLE = total
-
-print('Positive samples: ' , POSITIVE_SAMPLE ,
-      'Negative samples: ' , NEGATIVE_SAMPLE)
+    
+            print('Negative Example: ' + str(total))
+    NEGATIVE_SAMPLE = total
+    
+    print('Positive samples: ' , POSITIVE_SAMPLE ,
+          'Negative samples: ' , NEGATIVE_SAMPLE)

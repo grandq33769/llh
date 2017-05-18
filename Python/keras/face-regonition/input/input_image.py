@@ -29,26 +29,29 @@ y_test = np.empty(shape = (TESTING_SIZE,1))
 FINAL_LIST = [x_train,x_test]
 TARGET_LIST = [y_train,y_test]
 
-for mode,x,y in zip(MODE_LIST,FINAL_LIST,TARGET_LIST):
-    print(mode,'...')
-    index = 0
-    for cla in CLASS_LIST:
-        print(cla,'...')
-        path = URLBASE + '/' + mode + '/' + cla + '/' + '*.jpg'
-        for filename in glob.glob(path):
-            with Image.open(filename, 'r') as image:
-                im_arr = np.array(image)
-                try:
-                    arr = np.reshape(im_arr, (12,12,3))
-                except ValueError:
-                    arr = np.reshape(to_rgb(im_arr), (12,12,3))
-                x[index] = arr
-                if cla == 'Positive':
-                    y[index] = 1
-                else:
-                    y[index] = 0
-                
-                index += 1
-                
-print('x_train:',x_train.size,'y_train: ',y_train.size)
-print('x_test:',x_test.size,'y_test: ',y_test.size)
+def transform (image, shape):
+    im_arr = np.array(image)
+    try:
+        arr = np.reshape(im_arr, shape)
+    except ValueError:
+        arr = np.reshape(to_rgb(im_arr), shape)
+    return arr
+if __name__ == "__main__":
+    for mode,x,y in zip(MODE_LIST,FINAL_LIST,TARGET_LIST):
+        print(mode,'...')
+        index = 0
+        for cla in CLASS_LIST:
+            print(cla,'...')
+            path = URLBASE + '/' + mode + '/' + cla + '/' + '*.jpg'
+            for filename in glob.glob(path):
+                with Image.open(filename, 'r') as image:
+                    x[index] = transform(image, (12,12,3))
+                    if cla == 'Positive':
+                        y[index] = 1
+                    else:
+                        y[index] = 0
+                    
+                    index += 1
+                    
+    print('x_train:',x_train.size,'y_train: ',y_train.size)
+    print('x_test:',x_test.size,'y_test: ',y_test.size)
