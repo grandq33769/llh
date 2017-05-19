@@ -1,0 +1,4 @@
+#Ignore file from git
+**/*.pyc
+**/*.json
+**/*.jpg
