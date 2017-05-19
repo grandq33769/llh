@@ -3,14 +3,14 @@ Created on 2017年5月18日
 
 @author: LokHim
 '''
-from model import INPUT_PATH
+from Python.keras.face_regonition.model import INPUT_PATH
 import numpy as np
 import unittest
 import sys
 sys.path.insert(0, INPUT_PATH)
 from keras.models import Model, load_model
 from PIL import Image, ImageDraw
-from input.input_name import URLBASE
+from Python.keras.face_regonition.input.input_name import URLBASE
 from input.crop_image import crop
 from input.input_image import transform
 
@@ -37,12 +37,10 @@ class Test(unittest.TestCase):
                 if result[0] < result[1]:
                     draw.rectangle(
                         crop_list[index], outline='red')
-                    
+
                 index += 1
-            
+
             image.show()
-            image.save(URLBASE+'/Example/'+filename.replace('/', '_'))
-            
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.test_12net']
+            image.save(URLBASE + '/Example/' + filename.replace('/', '_'))
+
     unittest.main()
