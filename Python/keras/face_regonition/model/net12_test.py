@@ -3,21 +3,21 @@ Created on 2017年5月18日
 
 @author: LokHim
 '''
-from Python.keras.face_regonition.model import INPUT_PATH
-import numpy as np
 import unittest
-import sys
-sys.path.insert(0, INPUT_PATH)
-from keras.models import Model, load_model
+import numpy as np
+from keras.models import load_model
 from PIL import Image, ImageDraw
 from Python.keras.face_regonition.input.input_name import URLBASE
-from input.crop_image import crop
-from input.input_image import transform
+from Python.keras.face_regonition.input.crop_image import crop
+from Python.keras.face_regonition.input.input_image import transform
 
 
 class Test(unittest.TestCase):
+    '''Test for 12-net CNN'''
 
-    def test_12net(self):
+    @classmethod
+    def test_12net(cls):
+        '''Test case for one image face detection'''
         model = load_model('12-net.h5')
         filename = '2003/08/12/big/img_63.jpg'
         with Image.open(URLBASE + filename, 'r') as image:
