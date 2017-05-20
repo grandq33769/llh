@@ -14,6 +14,15 @@ SAMPLE_SIZE = 12
 SPACING = 4
 
 
+def transform_bbox(location):
+    '''A fucntion to transform class LOCATION to PIL-use data'''
+    start_x = location.xcoor - location.minor_axis
+    start_y = location.ycoor - location.major_axis
+    end_x = location.xcoor + location.minor_axis
+    end_y = location.ycoor + location.major_axis
+    return (start_x, start_y, end_x, end_y)
+
+
 def is_overlap(income, origin):
     '''A function to determine two region is it overlap'''
     origin = [x for x in map(lambda x: int(x + PADDING_SIZE), list(origin))]
@@ -71,6 +80,7 @@ def crop_face(face_list, image, image_size, spacing):
         return_list.append(new.crop(rbox) for rbox in sample_set)
     return return_list
 
+
 def crop(image, image_size, spacing):
     '''A function to crop all window in an image'''
     return_set = []
@@ -80,6 +90,7 @@ def crop(image, image_size, spacing):
                 image_size, y_start + image_size)
         return_set.append(rbox)
     return return_set
+
 
 if __name__ == "__main__":
     total = 0  # 5171
@@ -95,10 +106,10 @@ if __name__ == "__main__":
                     str_index = '{:04d}'.format(total)
                     croped_image.save(save_path + '_' + str_index + '.jpg')
                     total += 1
-    
+
             print('Positive Example: ' + str(total))
     POSITIVE_SAMPLE = total
-    
+
     # Crop background image
     TOTAL = 0
     for filename in FILESET:
@@ -113,9 +124,9 @@ if __name__ == "__main__":
                 final_path = save_path + str_index + '.jpg'
                 crop_image.save(final_path)
                 total += 1
-    
+
             print('Negative Example: ' + str(total))
     NEGATIVE_SAMPLE = total
-    
-    print('Positive samples: ' , POSITIVE_SAMPLE ,
-          'Negative samples: ' , NEGATIVE_SAMPLE)
+
+    print('Positive samples: ', POSITIVE_SAMPLE,
+          'Negative samples: ', NEGATIVE_SAMPLE)
