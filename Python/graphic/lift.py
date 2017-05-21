@@ -1,26 +1,26 @@
+'''Demo script for plotting lift graph of association rule'''
 from matplotlib import cm
-
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d  # @UnresolvedImport
+from mpl_toolkits.mplot3d import AXes3d  # @UnresolvedImport
 import numpy as np
 
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
+FIG = plt.figure()
+AX = FIG.gca(projection='3d')
 
-confidence = np.arange(0.1, 1, 0.1)
-probability_of_left = np.arange(0.1, 1, 0.1)
-confidence, probability_of_left = np.meshgrid(confidence, probability_of_left)
-lift = confidence / probability_of_left
+CONFIDENCE = np.arange(0.1, 1, 0.1)
+PROB_LEFT = np.arange(0.1, 1, 0.1)
+CONFIDENCE, PROB_LEFT = np.meshgrid(CONFIDENCE, PROB_LEFT)
+LIFT = CONFIDENCE / PROB_LEFT
 
-surf = ax.plot_sursface(confidence, probability_of_left,
-                       lift, cmap=cm.YlGnBu, linewidth=0, antialiased=False)
-ax.set_xlabel('Confidence')
-ax.set_ylabel('Probability of left')
-ax.set_zlabel('Lift')
-ax.set_zlim(0, 10)
+SURF = AX.plot_surface(CONFIDENCE, PROB_LEFT,
+                       LIFT, cmap=cm.YlGnBu, linewidth=0, antialiased=False)
+AX.set_xlabel('Confidence')
+AX.set_ylabel('Probability of left')
+AX.set_zlabel('Lift')
+AX.set_zlim(0, 10)
 
 plt.title('Change of Lift')
-fig.colorbar(surf, shrink=0.5, aspect=5)
+FIG.colorbar(SURF, shrink=0.5, aspect=5)
 
 plt.show()

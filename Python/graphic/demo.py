@@ -1,11 +1,12 @@
+'''Demo script for using matplotlib to plot graph'''
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-x = np.arange(0, 360)
-y = np.sin(x * np.pi / 180.0)
+X = np.arange(0, 360)
+Y = np.sin(X * np.pi / 180.0)
 
-plt.plot(x, y)
+plt.plot(X, Y)
 plt.xlim(-30, 390)
 plt.ylim(-1.5, 1.5)
 plt.xlabel("x-axis")
