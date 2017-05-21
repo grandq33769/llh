@@ -1,7 +1,7 @@
 '''Mining Sequential Frequent Pattern'''
 import functools as ft
 from itertools import product
-from arrange import ARRANGE_LIST
+from llh.Python.disease.arrange import ARRANGE_LIST
 
 RESULT_DICT = {}
 
