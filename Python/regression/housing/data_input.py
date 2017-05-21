@@ -1,24 +1,18 @@
-from _io import open
+'''Module for inputting raw data to a list'''
+from llh.Python.regression.housing \
+    import BASE_URL, FILE_NAME, INPUT_INDEX, TARGET_INDEX, NUM_OF_TUPLE
 
-
-# Meta-data
-file_name = 'housing_data.txt'
-attribute_name = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM',
-                  'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
-input_attribute_index = 12
-target_attribute_index = 13
-number_of_tuple = 506
-target_list = []
+TARGET_LIST = []
 
 # Input file
-with open(file_name, 'r') as file:
+with open(BASE_URL + FILE_NAME, 'r') as file:
     for line in file:
-        # Split up from line to attribute and append to target_list
+        # Split up from line to attribute and append to TARGET_LIST
         member = line[:-2].split(' ')
         member = list(filter(None, member))
         member = [float(attribute) for attribute in member]
-        target_list.append(
-            (member[input_attribute_index], member[target_attribute_index]))
-if target_list.__len__() != number_of_tuple:
+        TARGET_LIST.append(
+            (member[INPUT_INDEX], member[TARGET_INDEX]))
+if TARGET_LIST.__len__() != NUM_OF_TUPLE:
     raise Exception(
-        'Number of tuple in target list isn\'t correct to ' + str(number_of_tuple))
+        'Number of tuple in target list isn\'t correct to ', NUM_OF_TUPLE)

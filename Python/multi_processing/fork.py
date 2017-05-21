@@ -1,18 +1,18 @@
 '''Simple example for forking'''
 import multiprocessing as mp
-tlist = list(range(10))
+TLIST = list(range(10))
 
 
-def foo(pipe):
+def func(pipe):
     '''Testing Function'''
-    pipe.send(tlist)
+    pipe.send(TLIST)
     pipe.close()
 
 
 if __name__ == '__main__':
-    CTX = mp.get_context('fork') #'spawn' for window
-    pi_1, pi_2 = CTX.Pipe()
-    p1 = CTX.Process(target=foo, args=(pi_1,))
-    p1.start()
-    print(pi_2.recv())
-    p1.join()
+    CTX = mp.get_context('fork')  # 'spawn' for window
+    PI_1, PI_2 = CTX.Pipe()
+    P1 = CTX.Process(target=func, args=(PI_1,))
+    P1.start()
+    print(PI_2.recv())
+    P1.join()

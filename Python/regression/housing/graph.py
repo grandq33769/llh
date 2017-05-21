@@ -1,4 +1,7 @@
-from housing import data_input as di
+'''Module for ploting graph'''
+from llh.Python.regression.housing \
+    import ATTR_NAME, INPUT_INDEX, TARGET_INDEX
+from llh.Python.regression.housing.data_input import TARGET_LIST
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,16 +14,16 @@ mpl.rcParams['axes.unicode_minus']
 # my result : weight:-0.95 bias: 34.54
 # my result 2 : weight:-2.3272 weight2:0.0434 bias:42.8169
 
-x = np.arange(0, 40)
-y = -0.95 * x + 34.54
-y2 = -2.3272 * x + 0.0434 * x**2 + 42.8169
+X = np.arange(0, 40)
+Y = -0.95 * X + 34.54
+Y2 = -2.3272 * X + 0.0434 * X**2 + 42.8169
 
-plt.xlabel(di.attribute_name[di.input_attribute_index])
-plt.ylabel(di.attribute_name[di.target_attribute_index])
-for member in di.target_list:
+plt.xlabel(ATTR_NAME[INPUT_INDEX])
+plt.ylabel(ATTR_NAME[TARGET_INDEX])
+for member in TARGET_LIST:
     plt.scatter(member[0], member[1], color='blue')
-plt.plot(x, y, 'r')
-plt.plot(x, y2, color='#D9B611')
+plt.plot(X, Y, 'r')
+plt.plot(X, Y2, color='#D9B611')
 plt.title(u'中文')
 
 plt.show()

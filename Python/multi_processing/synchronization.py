@@ -1,18 +1,19 @@
+'''Demo script for synchronization of multiprocessing'''
 from multiprocessing import Process, Lock
 
 
-def f(l, i):
-    l.acquire()
+def func(lock, num):
+    '''Testing function for using lock'''
+    lock.acquire()
     try:
         for _ in range(1000):
-            print('hello world', i)
+            print('hello world', num)
     finally:
-        pass
-        l.release()
+        lock.release()
 
 
 if __name__ == '__main__':
-    lock = Lock()
+    LOCK = Lock()
 
-    for num in range(10):
-        Process(target=f, args=(lock, num)).start()
+    for n in range(10):
+        Process(target=func, args=(LOCK, n)).start()

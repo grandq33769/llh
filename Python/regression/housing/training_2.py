@@ -1,9 +1,9 @@
 '''
-Created on 2017å¹?4???12?—¥
+Created on 2017å¹´4æœˆ12æ—¥
 
 @author: LokHim
 '''
-from housing import data_input as di
+from llh.Python.regression.housing.data_input import TARGET_LIST
 
 weight = -2.3272
 weight_2 = 0.0434
@@ -46,7 +46,7 @@ for i in range(0, step_of_training):
     sum_of_db = 0
     sum_of_loss = 0
 
-    for member in di.target_list:
+    for member in TARGET_LIST:
         # print(predict(member[0]),member[1])
         sum_of_dw += differential_of_weight(member[0], member[1])
         sum_of_dw2 += differential_of_weight2(member[0], member[1])
