@@ -7,7 +7,7 @@ import os
 import random
 import shutil
 import multiprocessing as mp
-from input_name import URLBASE
+from llh.Python.keras.face_regonition.input import URLBASE
 
 BATCH_SIZE = 200
 NUM_PROCESS = 5
@@ -41,11 +41,12 @@ if __name__ == '__main__':
     CTX = mp.get_context('spawn')  # 'spawn' for window
     pp_list = [CTX.Process(target=seperate_data, args=('Positive',))
                for _ in range(NUM_PROCESS)]
-    np_list = [CTX.Process(target=seperate_data, args=('Negative',)) for _ in range(NUM_PROCESS)]
-    for p,n in zip(pp_list, np_list):
+    np_list = [CTX.Process(target=seperate_data, args=('Negative',))
+               for _ in range(NUM_PROCESS)]
+    for p, n in zip(pp_list, np_list):
         p.start()
         n.start()
 
-    for p,n in zip(pp_list, np_list):
+    for p, n in zip(pp_list, np_list):
         p.join()
         n.join()

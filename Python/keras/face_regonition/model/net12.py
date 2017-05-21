@@ -9,11 +9,8 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-from model import INPUT_PATH
-
-import sys
-sys.path.insert(0, INPUT_PATH)
-from input_image import x_train, y_train, x_test, y_test
+from llh.Python.keras.face_regonition.input_image import x_train, y_train, x_test, y_test
+from llh.Python.keras.face_regonition.model import INPUT_PATH
 
 batch_size = 32
 num_classes = 2
@@ -53,10 +50,10 @@ model.compile(loss='categorical_crossentropy',
 
 
 history = model.fit(x_train, y_train,
-          batch_size=batch_size,
-          epochs=epochs,
-          validation_data=(x_test, y_test),
-          shuffle=True)
+                    batch_size=batch_size,
+                    epochs=epochs,
+                    validation_data=(x_test, y_test),
+                    shuffle=True)
 
 score = model.evaluate(x_test, y_test, verbose=0)
 

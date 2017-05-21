@@ -7,9 +7,9 @@ import unittest
 import math
 import numpy as np
 from PIL import Image, ImageDraw
-from input_name import URLBASE
-from input_ellipse import LOCATION_DICT
-from crop_image import crop_face, transform_bbox
+from llh.Python.keras.face_regonition.input.input_name import URLBASE
+from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
+from llh.Python.keras.face_regonition.input.crop_image import crop_face, transform_bbox
 
 
 class Test(unittest.TestCase):

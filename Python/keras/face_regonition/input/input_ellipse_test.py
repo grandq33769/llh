@@ -4,8 +4,8 @@ Created on 2017年5月4日
 @author: LokHim
 '''
 import unittest
-from input_name import FILESET
-from input_ellipse import LOCATION_DICT
+from .input_name import FILESET
+from .input_ellipse import LOCATION_DICT
 
 
 class Test(unittest.TestCase):

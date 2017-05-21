@@ -3,7 +3,7 @@ Created on 2017年5月4日
 
 @author: LokHim
 '''
-from input_name import URLBASE
+from .input_name import URLBASE
 LOCATION_DICT = dict()
 
 

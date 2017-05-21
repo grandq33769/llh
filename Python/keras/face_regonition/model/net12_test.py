@@ -7,9 +7,9 @@ import unittest
 import numpy as np
 from keras.models import load_model
 from PIL import Image, ImageDraw
-from Python.keras.face_regonition.input.input_name import URLBASE
-from Python.keras.face_regonition.input.crop_image import crop
-from Python.keras.face_regonition.input.input_image import transform
+from llh.Python.keras.face_regonition.input import URLBASE
+from llh.Python.keras.face_regonition.input.crop_image import crop
+from llh.Python.keras.face_regonition.input.input_image import transform
 
 
 class Test(unittest.TestCase):

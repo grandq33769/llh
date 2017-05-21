@@ -6,8 +6,8 @@ Created on 2017年5月3日
 from math import ceil
 from itertools import product
 from PIL import Image
-from input_name import FILESET, URLBASE
-from input_ellipse import LOCATION_DICT
+from llh.Python.keras.face_regonition.input.input_name import FILESET, URLBASE
+from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
 
 PADDING_SIZE = 5
 SAMPLE_SIZE = 12

@@ -5,7 +5,7 @@ Created on 2017年5月3日
 '''
 import unittest
 import os.path
-from input_name import URLBASE, FILESET
+from llh.Python.keras.face_regonition.input.input_name import URLBASE, FILESET
 
 
 class Test(unittest.TestCase):
