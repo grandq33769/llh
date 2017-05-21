@@ -15,32 +15,31 @@ from llh.Python.keras.face_regonition.input.input_image import transform
 class Test(unittest.TestCase):
     '''Test for 12-net CNN'''
 
-    @classmethod
-    def test_12net(cls):
+    def setUp(self):
+        self.filename = '2003/08/12/big/img_63.jpg'
+        self.image = Image.open(URLBASE + '/' + self.filename, 'r')
+
+    def tearDown(self):
+        self.image.close()
+
+    def test_12net(self):
         '''Test case for one image face detection'''
         model = load_model('12-net.h5')
-        filename = '2003/08/12/big/img_63.jpg'
-        with Image.open(URLBASE + filename, 'r') as image:
-            crop_list = crop(image, 12, 4)
-            x_train = np.empty(shape=(len(crop_list), 12, 12, 3))
-            index = 0
-            for crop_bbox in crop_list:
-                crop_image = image.crop(crop_bbox)
-                arr = transform(crop_image, (12, 12, 3))
-                x_train[index] = arr
-                index += 1
+        crop_list = crop(self.image, 12, 4)
+        x_train = np.empty(shape=(len(crop_list), 12, 12, 3))
+        for index, crop_bbox in enumerate(crop_list):
+            crop_image = self.image.crop(crop_bbox)
+            x_train[index] = transform(crop_image, (12, 12, 3))
 
-            output = model.predict(x_train)
-            draw = ImageDraw.Draw(image)
-            index = 0
-            for result in output:
-                if result[0] < result[1]:
-                    draw.rectangle(
-                        crop_list[index], outline='red')
+        output = model.predict(x_train)
+        draw = ImageDraw.Draw(self.image)
+        for index, result in enumerate(output):
+            if result[0] < result[1]:
+                draw.rectangle(
+                    crop_list[index], outline='red')
 
-                index += 1
-
-            image.show()
-            image.save(URLBASE + '/Example/' + filename.replace('/', '_'))
+        self.image.show()
+        self.image.save(URLBASE + '/Example/' +
+                        self.filename.replace('/', '_'))
 
     unittest.main()
