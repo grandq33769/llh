@@ -12,7 +12,8 @@ from llh.Python.keras.face_regonition.input.input_name import URLBASE
 class Test(unittest.TestCase):
     '''Test for inputting input_image module'''
 
-    def test_input_image(self):
+    @classmethod
+    def test_input_image(cls):
         '''Test case for input a image and reshape into specific shape'''
         test_arr = np.empty(shape=(5000, 12, 12, 3))
         path = URLBASE + '/Training/Positive/'
