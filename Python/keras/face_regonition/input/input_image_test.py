@@ -6,15 +6,17 @@ Created on 2017年5月17日
 import unittest
 import numpy as np
 from PIL import Image
-from .input_name import URLBASE
+from llh.Python.keras.face_regonition.input.input_name import URLBASE
 
 
 class Test(unittest.TestCase):
+    '''Test for inputting input_image module'''
 
     def test_input_image(self):
+        '''Test case for input a image and reshape into specific shape'''
         test_arr = np.empty(shape=(5000, 12, 12, 3))
-        PATH = URLBASE + '/Training/Positive/'
-        with Image.open(PATH + '/2002_07_19_big_img_90_4717281.jpg', 'r') as image:
+        path = URLBASE + '/Training/Positive/'
+        with Image.open(path + '/2002_07_19_big_img_90_4717281.jpg', 'r') as image:
             arr = np.array(image)
             r_arr = np.reshape(arr, (12, 12, 3))
             print(r_arr.shape)
