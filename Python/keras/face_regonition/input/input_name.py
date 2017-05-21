@@ -3,7 +3,7 @@ Created on 2017年5月3日
 
 @author: LokHim
 '''
-from Python.keras.face_regonition.input import URLBASE
+from llh.Python.keras.face_regonition.input import URLBASE
 
 FILESET = set()
 
