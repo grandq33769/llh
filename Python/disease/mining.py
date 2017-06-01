@@ -1,7 +1,7 @@
 '''Mining Sequential Frequent Pattern'''
 import functools as ft
 from itertools import product
-from llh.Python.disease.arrange import ARRANGE_LIST
+from arrange import ARRANGE_LIST
 
 RESULT_DICT = {}
 
@@ -45,4 +45,4 @@ def sequential_mining(result_dict, arrange_list, length, window_size):
         return
 
 
-sequential_mining(RESULT_DICT, ARRANGE_LIST, len(ARRANGE_LIST), 4)
+#sequential_mining(RESULT_DICT, ARRANGE_LIST, len(ARRANGE_LIST), 4)

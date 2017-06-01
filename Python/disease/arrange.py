@@ -1,5 +1,5 @@
 '''Arrange all location in a month'''
-from llh.Python.disease.open_data import RAWDATA
+from open_data import RAWDATA
 ARRANGE_DICT = {}
 ARRANGE_LIST = []
 
@@ -11,7 +11,7 @@ def dict_of_location(alist):
         if ldata.location in location:
             location[ldata.location] += ldata.number
         else:
-            new_dict = {ldata.location: ldata.number}
+            new_dict = {ldata.location:ldata.number}
             location.update(new_dict)
 
     return location
@@ -33,8 +33,8 @@ for year in range(2003, 2017):
         if s in ARRANGE_DICT:
             loc_dict = dict_of_location(ARRANGE_DICT[s])
             ARRANGE_LIST.append(loc_dict)
-            print(s, loc_dict)
+            print(s,loc_dict)
         else:
             loc_dict = {}
             ARRANGE_LIST.append(loc_dict)
-            print(s, loc_dict)
+            print(s,loc_dict)
