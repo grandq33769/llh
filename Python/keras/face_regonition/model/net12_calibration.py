@@ -1,5 +1,5 @@
 '''
-Created on 2017年5月15日
+Created on 2017年6月7日
 
 @author: LokHim
 '''
@@ -34,7 +34,7 @@ MODEL.add(Conv2D(16, (3, 3), padding='same',
 MODEL.add(Activation('relu'))
 MODEL.add(MaxPooling2D(pool_size=(3, 3), strides=2))
 MODEL.add(Flatten())
-MODEL.add(Dense(16))
+MODEL.add(Dense(128))
 MODEL.add(Activation('tanh'))
 MODEL.add(Dense(NUM_CLASSES))
 MODEL.add(Activation('softmax'))
@@ -59,4 +59,4 @@ SCORE = MODEL.evaluate(X_TEST, Y_TEST, verbose=0)
 print('Test loss:', SCORE[0])
 print('Test accuracy:', SCORE[1])
 
-MODEL.save('12-net.h5')
+MODEL.save('12-net-calibration.h5')
