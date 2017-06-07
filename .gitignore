@@ -3,3 +3,4 @@
 **/*.json
 **/*.jpg
 __pycache__/**
+**/word_embedding/**

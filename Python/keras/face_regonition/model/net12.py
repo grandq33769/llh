@@ -35,7 +35,7 @@ MODEL.add(Activation('relu'))
 MODEL.add(MaxPooling2D(pool_size=(3, 3), strides=2))
 MODEL.add(Flatten())
 MODEL.add(Dense(16))
-MODEL.add(Activation('relu'))
+MODEL.add(Activation('tanh'))
 MODEL.add(Dense(NUM_CLASSES))
 MODEL.add(Activation('softmax'))
 
