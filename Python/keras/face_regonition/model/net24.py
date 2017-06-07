@@ -6,7 +6,7 @@ Created on 2017年6月7日
 
 from __future__ import print_function
 import keras
-from keras.models import Sequential, model, load_model
+from keras.models import Sequential, Model, load_model
 from keras.layers import Dense, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from llh.Python.keras.face_regonition.input.input_image import X_TRAIN, Y_TRAIN, X_TEST, Y_TEST
@@ -37,9 +37,9 @@ MODEL.add(Flatten())
 MODEL.add(Dense(128))
 MODEL.add(Activation('tanh'))
 # Concatenate 12-net result
-model = load_model('12-net.h5')
-net12_model = Model(inputs=model.input,
-                    outputs=model.get_layer(index=6).output)
+IMPORT_NET = load_model('12-net.h5')
+NET12 = Model(inputs=IMPORT_NET.input,
+              outputs=IMPORT_NET.get_layer(index=6).output)
 
 MODEL.add(Dense(NUM_CLASSES))
 MODEL.add(Activation('softmax'))
