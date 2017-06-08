@@ -12,14 +12,17 @@ MODEL.add(Conv2D(64, (5, 5), padding='same',
                  input_shape=X_TRAIN.shape[1:]))
 MODEL.add(Activation('relu'))
 MODEL.add(MaxPooling2D(pool_size=(3, 3), strides=2))
+# TODO:Model add normalization layer (9*9)
+MODEL.add(Conv2D(64, (5, 5), padding='same'))
+# TODO:Model add normalization layer (9*9)
+MODEL.add(MaxPooling2D(pool_size=(3, 3), strides=2))
 MODEL.add(Flatten())
-MODEL.add(Dense(128))
+MODEL.add(Dense(256))
 MODEL.add(Activation('tanh'))
 # Concatenate 12-net result
-IMPORT_NET = load_model('12-net.h5')
+IMPORT_NET = load_model('24-net.h5')
 NET12 = Model(inputs=IMPORT_NET.input,
-              outputs=IMPORT_NET.get_layer(index=6).output)
-# TODO:Concatenate the NET12 to fully-connected layer for softmax
+              outputs=IMPORT_NET.get_layer(index=7).output)
 
 MODEL.add(Dense(NUM_CLASSES))
 MODEL.add(Activation('softmax'))
@@ -44,4 +47,4 @@ SCORE = MODEL.evaluate(X_TEST, Y_TEST, verbose=0)
 print('Test loss:', SCORE[0])
 print('Test accuracy:', SCORE[1])
 
-MODEL.save('12-net.h5')
+MODEL.save('48-net.h5')
