@@ -69,13 +69,15 @@ def crop_face(face_list, image, image_size, spacing):
     for face in face_list:
         sample_set = set()
         bbox = location_of_face(face)
-        new = image.rotate(face.angle)
+        new_image = image.rotate(face.angle).crop(bbox)
+        '''
         for x_start, y_start in product(range(bbox[0], bbox[2], spacing),
                                         range(bbox[1], bbox[3], spacing)):
             rbox = (x_start, y_start, x_start +
                     image_size, y_start + image_size)
             sample_set.add(rbox)
-        return_list.append(new.crop(rbox) for rbox in sample_set)
+        '''
+        return_list.append(new_image)
     return return_list
 
 
@@ -83,7 +85,7 @@ def crop(image, image_size, spacing):
     '''A function to crop all window in an image'''
     return_set = []
     width, height = image.size
-    for x_start, y_start in product(range(0, width, spacing), range(0, height, spacing)):
+    for x_start, y_start in product(range(0, width-image_size, spacing), range(0, height-image_size, spacing)):
         rbox = (x_start, y_start, x_start +
                 image_size, y_start + image_size)
         return_set.append(rbox)
@@ -98,16 +100,16 @@ if __name__ == "__main__":
             croped_list = crop_face(
                 LOCATION_DICT[filename], img, SAMPLE_SIZE, SPACING)
             file_name = filename.replace('/', '_')
-            save_path = URLBASE + '/Input_Data/Positive/' + file_name
+            save_path = URLBASE + '/Face/' + file_name
             for croped_face in croped_list:
-                for croped_image in croped_face:
-                    str_index = '{:04d}'.format(TOTAL)
-                    croped_image.save(save_path + '_' + str_index + '.jpg')
-                    TOTAL += 1
+                #for croped_image in croped_face:
+                str_index = '{:04d}'.format(TOTAL)
+                croped_face.save(save_path + '_' + str_index + '.jpg')
+                TOTAL += 1
 
             print('Positive Example: ', TOTAL)
     POSITIVE_SAMPLE = TOTAL
-
+    '''
     # Crop background image
     TOTAL = 0
     for filename in FILESET:
@@ -122,7 +124,8 @@ if __name__ == "__main__":
                 TOTAL += 1
 
             print('Negative Example: ', TOTAL)
+    '''
+            
     NEGATIVE_SAMPLE = TOTAL
-
     print('Positive samples: ', POSITIVE_SAMPLE,
           'Negative samples: ', NEGATIVE_SAMPLE)

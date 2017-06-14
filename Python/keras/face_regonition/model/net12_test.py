@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
     '''Test for 12-net CNN'''
 
     def setUp(self):
-        self.filename = '2003/08/12/big/img_63.jpg'
+        self.filename = '2003/05/19/big/img_546.jpg'
         self.image = Image.open(URLBASE + '/' + self.filename, 'r')
 
     def tearDown(self):
@@ -25,7 +25,8 @@ class Test(unittest.TestCase):
     def test_12net(self):
         '''Test case for one image face detection'''
         model = load_model('12-net.h5')
-        crop_list = crop(self.image, 12, 4)
+        #Size should be tuned
+        crop_list = crop(self.image, 50, 4)
         x_train = np.empty(shape=(len(crop_list), 12, 12, 3))
         for index, crop_bbox in enumerate(crop_list):
             crop_image = self.image.crop(crop_bbox)
@@ -34,7 +35,8 @@ class Test(unittest.TestCase):
         output = model.predict(x_train)
         draw = ImageDraw.Draw(self.image)
         for index, result in enumerate(output):
-            if result[0] < result[1]:
+            #Threshold : 0.99
+            if result[1] > 0.99:
                 draw.rectangle(
                     crop_list[index], outline='red')
 
@@ -42,4 +44,5 @@ class Test(unittest.TestCase):
         self.image.save(URLBASE + '/Example/' +
                         self.filename.replace('/', '_'))
 
+if __name__ == '__main__':
     unittest.main()

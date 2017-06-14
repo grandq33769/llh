@@ -9,7 +9,7 @@ import shutil
 import multiprocessing as mp
 from llh.Python.keras.face_regonition.input import URLBASE
 
-BATCH_SIZE = 1000000
+BATCH_SIZE = 379
 NUM_PROCESS = 5
 TRAINING_PROP = 0.7
 INPUT_DATA_PATH = '/Input_Data'
@@ -19,23 +19,13 @@ def seperate_data(mode, t_prop=TRAINING_PROP):
     SRC = URLBASE + INPUT_DATA_PATH + '/' + mode + '/'
     DST_TRANING = URLBASE + '/Training/' + mode + '/'
     DST_TESTING = URLBASE + '/Testing/' + mode + '/'
-    '''
-    num_of_file = len(
-        [name for name in os.listdir(SRC) if os.path.isfile(SRC + name)])
-    num_of_training = int(num_of_file * t_prop)
-    num_of_testing = num_of_file - num_of_training
-    dir_list = [DST_TRANING, DST_TESTING]
-    num_list = [num_of_training, num_of_testing]
-    print(mode + ' Training:',num_list[0],'Testing:',num_list[1])
-    '''
-
     # for x, y in enumerate(dir_list):
     for _ in range(BATCH_SIZE):
         file = random.choice(os.listdir(SRC))
         file_str = (str(file))
         print(file_str)
         #Destination need to modify for training (DST_TRAINING)/testing (DST_TESTING)
-        shutil.move(SRC + file_str, DST_TRANING)
+        shutil.move(SRC + file_str, DST_TESTING)
 
 
 if __name__ == '__main__':

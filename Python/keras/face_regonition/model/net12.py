@@ -5,8 +5,8 @@ Created on 2017年5月15日
 '''
 from llh.Python.keras.face_regonition.model import *
 
+X_TRAIN,Y_TRAIN,X_TEST,Y_TEST = all_data(12, '12-net')
 MODEL = Sequential()
-
 MODEL.add(Conv2D(16, (3, 3), padding='same',
                  input_shape=X_TRAIN.shape[1:]))
 MODEL.add(Activation('relu'))
