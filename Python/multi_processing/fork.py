@@ -10,7 +10,7 @@ def func(pipe):
 
 
 if __name__ == '__main__':
-    CTX = mp.get_context('fork')  # 'spawn' for window
+    CTX = mp.get_context('spawn')  # 'spawn' for window
     PI_1, PI_2 = CTX.Pipe()
     P1 = CTX.Process(target=func, args=(PI_1,))
     P1.start()

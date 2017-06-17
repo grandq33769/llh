@@ -54,6 +54,7 @@ def all_data(size,net):
             path = URLBASE + '/' + mode + '/' + cla + '/' + '*.jpg'
             for filename in glob.glob(path):
                 with Image.open(filename, 'r') as img:
+                    print(index)
                     x[index] = transform(img, (size, size, 3))
                     if cla == 'Positive':
                         y[index] = 1
@@ -75,5 +76,4 @@ def all_data(size,net):
     
     Y_TRAIN = keras.utils.to_categorical(Y_TRAIN, 2)
     Y_TEST = keras.utils.to_categorical(Y_TEST, 2)
-    print(Y_TRAIN)
     return X_TRAIN,Y_TRAIN,X_TEST,Y_TEST

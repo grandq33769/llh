@@ -8,7 +8,7 @@ from llh.Python.keras.face_regonition.input.input_image import all_data
 
 BATCH_SIZE = 128
 NUM_CLASSES = 2
-EPOCHS = 20
+EPOCHS = 200
 
 __all__ = ['BATCH_SIZE', 'NUM_CLASSES', 'EPOCHS','Sequential',\
            'Dense', 'Activation', 'Flatten','Conv2D', 'MaxPooling2D',\

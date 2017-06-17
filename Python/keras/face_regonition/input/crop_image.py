@@ -3,34 +3,28 @@ Created on 2017年5月3日
 
 @author: LokHim
 '''
+import gc
+import glob
 from math import ceil
 from itertools import product
 from PIL import Image
 from llh.Python.keras.face_regonition.input.input_name import FILESET, URLBASE
 from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
+from llh.Python.keras.face_regonition.output import MODEL_LIST
 
 PADDING_SIZE = 5
-SAMPLE_SIZE = 12
-SPACING = 4
 
-
-def transform_bbox(location):
-    '''A fucntion to transform class LOCATION to PIL-use data'''
-    start_x = location.xcoor - location.minor_axis
-    start_y = location.ycoor - location.major_axis
-    end_x = location.xcoor + location.minor_axis
-    end_y = location.ycoor + location.major_axis
-    return (start_x, start_y, end_x, end_y)
-
-
-def is_overlap(income, origin):
-    '''A function to determine two region is it overlap'''
-    origin = [x for x in map(lambda x: int(x + PADDING_SIZE), list(origin))]
+def setOfIntersection(income, origin):
     income_x = {x for x in range(income[0], income[2] + 1)}
     income_y = {y for y in range(income[1], income[3] + 1)}
     origin_x = {x for x in range(origin[0], origin[2])}
     origin_y = {y for y in range(origin[1], origin[3])}
+    return income_x,income_y,origin_x,origin_y
 
+def is_overlap(income, origin):
+    '''A function to determine two region is it overlap'''
+    origin = [x for x in map(lambda x: int(x + PADDING_SIZE), list(origin))]
+    income_x,income_y,origin_x,origin_y = setOfIntersection(income, origin)
     return income_x - origin_x != income_x and income_y - origin_y != income_y
 
 
@@ -43,40 +37,68 @@ def location_of_face(face):
     return (int(start_x), int(start_y), ceil(end_x), ceil(end_y))
 
 
-def crop_negative(face_list, image, image_size):
-    '''A function to crop all negative face samples from a image'''
-    return_set = set()
+def cropResult(face_list, image, name):
+    from llh.Python.keras.face_regonition.output.classifier import predict, needMerge
+    #return_list[0] = positive ; return_list[1] = negative
+    return_list = [[], []]
     location_set = set()
+
+    for face in face_list:
+        bbox = location_of_face(face)
+        location_set.add(bbox)
+    
+    model = MODEL_LIST[MODEL_LIST.index(name)-1]
+    for location in location_set:
+        width = location[2] - location[0]
+        height = location[3] - location[1]
+        #Main Process
+        box_list = crop(image, (width,height) ,4)
+        croped_list = predict(model, box_list, image)
+
+    for rbox in croped_list:
+        croped_image = image.crop(rbox)
+        if any([needMerge(rbox, loc, 0.7) for loc in location_set]):
+            return_list[0].append(croped_image)
+        else:
+            return_list[1].append(croped_image)
+
+    return return_list
+
+
+def crop_negative(face_list, image):
+    '''A function to crop all negative face samples from a image'''
+    return_list = []
+    location_set = set()
+    size_list = []
     width, height = image.size
 
     for face in face_list:
         bbox = location_of_face(face)
         location_set.add(bbox)
+    
+    for location in location_set:
+        width = location[2] - location[0]
+        height = location[3] - location[1]
+        size_list.append([width,height])
+        
+    for size in size_list: 
+        for x_start, y_start in product(range(0, width, size[0]), range(0, height, size[1])):
+            rbox = (x_start, y_start, x_start +
+                    size[0], y_start + size[1])
+            if any([is_overlap(rbox, loc) for loc in location_set]):
+                pass
+            else:
+                croped_image = image.crop(rbox)
+                return_list.append(croped_image)
+    return return_list
 
-    for x_start, y_start in product(range(0, width, image_size), range(0, height, image_size)):
-        rbox = (x_start, y_start, x_start +
-                image_size, y_start + image_size)
-        if any([is_overlap(rbox, loc) for loc in location_set]):
-            pass
-        else:
-            return_set.add(rbox)
-    return return_set
 
-
-def crop_face(face_list, image, image_size, spacing):
+def crop_face(face_list, image):
     '''A function to crop all face in an image'''
     return_list = []
     for face in face_list:
-        sample_set = set()
         bbox = location_of_face(face)
         new_image = image.rotate(face.angle).crop(bbox)
-        '''
-        for x_start, y_start in product(range(bbox[0], bbox[2], spacing),
-                                        range(bbox[1], bbox[3], spacing)):
-            rbox = (x_start, y_start, x_start +
-                    image_size, y_start + image_size)
-            sample_set.add(rbox)
-        '''
         return_list.append(new_image)
     return return_list
 
@@ -85,47 +107,76 @@ def crop(image, image_size, spacing):
     '''A function to crop all window in an image'''
     return_set = []
     width, height = image.size
-    for x_start, y_start in product(range(0, width-image_size, spacing), range(0, height-image_size, spacing)):
+    for x_start, y_start in product(range(0, width - image_size[0], spacing), range(0, height - image_size[1], spacing)):
         rbox = (x_start, y_start, x_start +
-                image_size, y_start + image_size)
+                image_size[0], y_start + image_size[1])
         return_set.append(rbox)
     return return_set
 
 
-if __name__ == "__main__":
-    TOTAL = 0  # 5171
-    # Crop face image
+def saveImage(name, function):
+    '''A function can crop Positive/Negative image and save to specific path'''
+    total = 0
+    total_crop = 0
     for filename in FILESET:
-        with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
-            croped_list = crop_face(
-                LOCATION_DICT[filename], img, SAMPLE_SIZE, SPACING)
-            file_name = filename.replace('/', '_')
-            save_path = URLBASE + '/Face/' + file_name
-            for croped_face in croped_list:
-                #for croped_image in croped_face:
-                str_index = '{:04d}'.format(TOTAL)
-                croped_face.save(save_path + '_' + str_index + '.jpg')
-                TOTAL += 1
+        print('Processing : ',filename ,'Number of Image Processed : ',total)
+        file_name = filename.replace('/', '_')
+        save_path = [URLBASE + '/Input_Data/' + name + '/Positive/' + file_name,
+                     URLBASE + '/Input_Data/' + name + '/Negative/' + file_name]
+        total += 1
 
-            print('Positive Example: ', TOTAL)
-    POSITIVE_SAMPLE = TOTAL
-    '''
-    # Crop background image
-    TOTAL = 0
-    for filename in FILESET:
-        with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
-            croped_set = crop_negative(
-                LOCATION_DICT[filename], img, SAMPLE_SIZE)
-            file_name = filename.replace('/', '_')
-            save_path = URLBASE + '/Input_Data/Negative/'
-            for croped_neg in croped_set:
-                crop_image = img.crop(tuple(croped_neg))
-                crop_image.save(save_path, TOTAL, '.jpg')
-                TOTAL += 1
-
-            print('Negative Example: ', TOTAL)
-    '''
+        #Determine image has been processed
+        break_flag = False
+        skip_list = []
+        if function.__name__ == 'cropResult':
+            skip_path = [path.replace('_big','') for path in save_path]
+        elif function.__name__ == 'crop_face':
+            skip_path = [save_path[0]]
+        else:
+            skip_path = [save_path[1]]
             
-    NEGATIVE_SAMPLE = TOTAL
-    print('Positive samples: ', POSITIVE_SAMPLE,
-          'Negative samples: ', NEGATIVE_SAMPLE)
+        for skip_path in skip_list:
+            if(glob.glob(skip_path +'_*') != []):
+                print(function.__name__,filename,'had already processed...')
+                break_flag = True
+                break
+        if(break_flag == True):
+            continue
+        
+        #Crop Begin
+        total_list = [[], []]
+        with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
+            if function.__name__ == 'cropResult':
+                total_list = function(LOCATION_DICT[filename], img, name)
+
+            elif function.__name__ == 'crop_face':
+                total_list[0] = function(LOCATION_DICT[filename], img)
+
+            elif function.__name__ == 'crop_negative':
+                total_list[1] = function(LOCATION_DICT[filename], img)
+            else:
+                raise NameError
+
+            file_index = 1
+            if all([clist != [] for clist in total_list]):
+                path_str = [path.replace('_big','') for path in save_path]
+            else:
+                path_str = save_path
+            
+            for index, croped_list in enumerate(total_list):
+                if(len(croped_list) > 0):
+                    for croped_face in croped_list:
+                        croped_face.save(
+                            path_str[index] + '_' + str(file_index) + '.jpg')
+                        file_index += 1
+                        total_crop += 1
+            
+            del total_list,img
+            gc.collect()
+
+    print('Number of Cropped Image Save: ', total_crop)
+
+
+if __name__ == "__main__":
+    #Total Faces: 5171
+    saveImage('12-net-calibration', cropResult)

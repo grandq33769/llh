@@ -9,35 +9,61 @@ import shutil
 import multiprocessing as mp
 from llh.Python.keras.face_regonition.input import URLBASE
 
-BATCH_SIZE = 379
-NUM_PROCESS = 5
-TRAINING_PROP = 0.7
+
+TRAIN_PROP = 0.7
+NUM_PROCESS = 3
 INPUT_DATA_PATH = '/Input_Data'
 
+#mode: Positive/Negative #net: '12-net','12-net-calibration','24-net','24-net-calibration','48-net','48-net-calibration' #corpus : 'Training','Testing'
+def seperate_data(corpus,net,mode,size,lock):
+    src = URLBASE + INPUT_DATA_PATH + '/' + net + '/'+ '/' + mode + '/'
+    dst_tr = URLBASE + '/' + 'Training' + '/' + '/' + net + '/' + mode + '/'
+    dst_te = URLBASE + '/' + 'Testing' + '/' + '/' + net + '/' + mode + '/'
 
-def seperate_data(mode, t_prop=TRAINING_PROP):
-    SRC = URLBASE + INPUT_DATA_PATH + '/' + mode + '/'
-    DST_TRANING = URLBASE + '/Training/' + mode + '/'
-    DST_TESTING = URLBASE + '/Testing/' + mode + '/'
-    # for x, y in enumerate(dir_list):
-    for _ in range(BATCH_SIZE):
-        file = random.choice(os.listdir(SRC))
-        file_str = (str(file))
-        print(file_str)
-        #Destination need to modify for training (DST_TRAINING)/testing (DST_TESTING)
-        shutil.move(SRC + file_str, DST_TESTING)
+    with size.get_lock():
+        if(size[0] == 0):
+            size[0] = len([name for name in os.listdir(src) if os.path.isfile(os.path.join(src, name))])
+            size[1] = len([name for name in os.listdir(dst_tr) if os.path.isfile(os.path.join(dst_tr, name))])
+            size[2] = len([name for name in os.listdir(dst_te) if os.path.isfile(os.path.join(dst_te, name))])
 
+    total = sum(size)
+    batch_size = int((total * TRAIN_PROP)-size[1])
+    dst = dst_tr
+    if corpus == 'Testing':
+        batch_size = int(total-batch_size-size[1]-size[2])
+        dst = dst_te
+        
+    for _ in range(batch_size):
+        file = random.choice(os.listdir(src))
+        file_str = str(file)
+        shutil.move(src + file_str,  dst)
+
+        lock.acquire()
+        try:
+            print(net,corpus,mode,' File Moved in :')
+            print(file_str)
+        finally:
+            lock.release()
 
 if __name__ == '__main__':
+    psize = mp.Array('i',range(3))
+    nsize = mp.Array('i',range(3))
+    lock = mp.Lock()
     CTX = mp.get_context('spawn')  # 'spawn' for window
-    pp_list = [CTX.Process(target=seperate_data, args=('Positive',))
+    tr_plist = [CTX.Process(target=seperate_data, args=('Training','12-net','Positive',psize,lock))
                for _ in range(NUM_PROCESS)]
-    np_list = [CTX.Process(target=seperate_data, args=('Negative',))
+    tr_nlist = [CTX.Process(target=seperate_data, args=('Training','12-net','Negative',nsize,lock))
                for _ in range(NUM_PROCESS)]
-    for p, n in zip(pp_list, np_list):
-        p.start()
-        n.start()
+    te_plist = [CTX.Process(target=seperate_data, args=('Testing','12-net','Positive',psize,lock))
+               for _ in range(NUM_PROCESS)]
+    te_nlist = [CTX.Process(target=seperate_data, args=('Testing','12-net','Negative',nsize,lock))
+               for _ in range(NUM_PROCESS)]
 
-    for p, n in zip(pp_list, np_list):
-        p.join()
-        n.join()
+    total_list = [tr_plist,tr_nlist,te_plist,te_nlist]
+    for plist in total_list:
+        for process in plist:
+            process.start()
+            
+    for plist in total_list:
+        for process in plist:
+            process.join()
