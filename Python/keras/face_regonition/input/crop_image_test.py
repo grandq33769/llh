@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from llh.Python.keras.face_regonition.input.input_name import URLBASE
 from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
-from llh.Python.keras.face_regonition.input.crop_image import crop_face, transform_bbox
+from llh.Python.keras.face_regonition.input.crop_image import crop_face, location_of_face
 
 
 class Test(unittest.TestCase):
@@ -62,13 +62,13 @@ class Test(unittest.TestCase):
         '''Test case 3 for drawing a ellipse on face image'''
         ed_list = LOCATION_DICT[self.filename]
         for index, ell_data in enumerate(ed_list):
-            bbox = transform_bbox(ell_data)
+            bbox = location_of_face(ell_data)
             crop_image = self.image.rotate(ell_data.angle).crop(bbox)
             crop_image.save(URLBASE, '/Example/crop_face_', index, '.jpg')
             crop_image.show()
 
         save_path = URLBASE + '/Example/Crop/'
-        for findex, croped_face in enumerate(crop_face(ed_list, self.image, 12, 4)):
+        for findex, croped_face in enumerate(crop_face(ed_list, self.image)):
             for iindex, croped_image in enumerate(croped_face):
                 croped_image.save(save_path, findex, '_', iindex, '.jpg')
         self.image.show()
