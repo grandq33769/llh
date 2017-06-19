@@ -5,6 +5,8 @@ Created on 2017年5月3日
 '''
 import gc
 import glob
+import time
+import multiprocessing as mp
 from math import ceil
 from itertools import product
 from PIL import Image
@@ -60,7 +62,7 @@ def cropResult(face_list, image, name):
 
     for rbox in croped_list:
         croped_image = image.crop(rbox)
-        if any([needMerge(rbox, loc, 0.2) for loc in location_set]):
+        if any([needMerge(rbox, loc, 0.5) for loc in location_set]):
             return_list[0].append(croped_image)
         else:
             return_list[1].append(croped_image)
@@ -116,13 +118,41 @@ def crop(image, image_size, spacing):
         return_set.append(rbox)
     return return_set
 
+def processImage(name,filename,function,path_str,total_crop):
+    start_time = time.time()
+    
+    total_list = [[], []]
+    with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
+        if function.__name__ == 'cropResult':
+            total_list = function(LOCATION_DICT[filename], img, name)
+
+        elif function.__name__ == 'crop_face':
+            total_list[0] = function(LOCATION_DICT[filename], img)
+
+        elif function.__name__ == 'crop_negative':
+            total_list[1] = function(LOCATION_DICT[filename], img)
+        else:
+            raise NameError
+
+        file_index = 1
+        for index, croped_list in enumerate(total_list):
+            if(len(croped_list) > 0):
+                for croped_face in croped_list:
+                    croped_face.save(
+                        path_str[index] + '_' + str(file_index) + '.jpg')
+                    file_index += 1
+                    total_crop.value += 1
+
+        total_time = time.time()-start_time
+        print(filename,'Process Finished. Processing Time: {:.3f} sec'.format(total_time))
+
 
 def saveImage(name, function):
     '''A function can crop Positive/Negative image and save to specific path'''
     total = 0
-    total_crop = 0
+    total_crop = mp.Value('i',0)
     for filename in FILESET:
-        print('Processing : ', filename, 'Number of Image Processed : ', total)
+        print('\nProcessing : ', filename, 'Number of Image Processed : ', total)
         file_name = filename.replace('/', '_')
         save_path = [URLBASE + '/Input_Data/' + name + '/Positive/' + file_name,
                      URLBASE + '/Input_Data/' + name + '/Negative/' + file_name]
@@ -130,56 +160,28 @@ def saveImage(name, function):
 
         # Determine image has been processed
         break_flag = False
-        skip_list = []
+        path_str = []
         if function.__name__ == 'cropResult':
-            skip_path = [path.replace('_big', '') for path in save_path]
-        elif function.__name__ == 'crop_face':
-            skip_path = [save_path[0]]
+            path_str = [path.replace('_big', '') for path in save_path]
         else:
-            skip_path = [save_path[1]]
+            path_str = save_path
 
-        for skip_path in skip_list:
-            if(glob.glob(skip_path + '_*') != []):
+        for path in path_str:
+            if(glob.glob(path + '_*') != []):
                 print(function.__name__, filename, 'had already processed...')
                 break_flag = True
                 break
         if(break_flag == True):
             continue
 
-        # Crop Begin
-        total_list = [[], []]
-        with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
-            if function.__name__ == 'cropResult':
-                total_list = function(LOCATION_DICT[filename], img, name)
+        # Process Begin
+        process = mp.Process(target=processImage, args=(name,filename,function,path_str,total_crop,))
+        process.start()
+        process.join()
 
-            elif function.__name__ == 'crop_face':
-                total_list[0] = function(LOCATION_DICT[filename], img)
-
-            elif function.__name__ == 'crop_negative':
-                total_list[1] = function(LOCATION_DICT[filename], img)
-            else:
-                raise NameError
-
-            file_index = 1
-            if all([clist != [] for clist in total_list]):
-                path_str = [path.replace('_big', '') for path in save_path]
-            else:
-                path_str = save_path
-
-            for index, croped_list in enumerate(total_list):
-                if(len(croped_list) > 0):
-                    for croped_face in croped_list:
-                        croped_face.save(
-                            path_str[index] + '_' + str(file_index) + '.jpg')
-                        file_index += 1
-                        total_crop += 1
-
-            del total_list, img
-            gc.collect()
-
-    print('Number of Cropped Image Save: ', total_crop)
+    print('Number of Cropped Image Save: ', total_crop.value)
 
 
 if __name__ == "__main__":
-    # Total Faces: 5171
+    # Total Faces: 5171
     saveImage('12-net-calibration', cropResult)

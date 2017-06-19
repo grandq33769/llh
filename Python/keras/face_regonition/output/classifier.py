@@ -4,6 +4,7 @@ Created on 2017年6月15日
 @author: LokHim
 '''
 import gc
+import time
 import numpy as np
 from math import ceil, sqrt
 from itertools import product, combinations
@@ -16,7 +17,7 @@ from llh.Python.keras.face_regonition.output import MODEL_LIST
 S_LIST = [0.83, 0.91, 1.0, 1.10, 1.21]
 X_LIST = [-0.17, 0, 0.17]
 Y_LIST = [-0.17, 0, 0.17]
-THRESHOLD = {'12-net': 0.9965, '12-net-calibration': 0.999}
+THRESHOLD = {'12-net': 0.999, '12-net-calibration': 0.999}
 NMS_THRESHOLD = {'12-net-calibration': 0.9}
 
 
@@ -29,6 +30,7 @@ def predict(name, box_list, image):
     # Recursive
     if(now_index != 0):
         blist = predict(MODEL_LIST[now_index - 1], box_list, image)
+        start_time = time.time()
         if(now_index % 2 == 0):
             return_list = getResult(model, threshold, image, blist, input_size)
         else:
@@ -39,9 +41,11 @@ def predict(name, box_list, image):
 
     else:
         blist = box_list
+        start_time = time.time()
         return_list = getResult(model, threshold, image, blist, input_size)
 
-    print('End of', name, '......')
+    total_time = time.time() - start_time
+    print('End of', name, '...... Processing Time : {:.3f} sec'.format(total_time))
     return return_list
 
 

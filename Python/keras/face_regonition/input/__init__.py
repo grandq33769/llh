@@ -1,2 +1,2 @@
 '''Initial py for face_recognition input'''
-URLBASE = '/Users/lhleung/Documents/Data/FDDB'
+URLBASE = 'D:/U/105-2/Pattern Regonition/Final Project/Data'
