@@ -32,8 +32,7 @@ def read_location(number, data):
 for i in range(1, 11):
     with open(URLBASE + '/FDDB-folds/FDDB-fold-' + '{:02d}'.format(i)
               + '-ellipseList.txt', 'r') as ellipselist:
-        print('Importing: FDDB-fold-' +
-              '{:02d}'.format(i) + '-ellipseList.txt')
+        #print('Importing: FDDB-fold-' + '{:02d}'.format(i) + '-ellipseList.txt')
         for line in ellipselist:
             key = line[:-1]
             num = ellipselist.readline()

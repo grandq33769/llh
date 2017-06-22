@@ -3,6 +3,8 @@ Created on 2017年5月3日
 
 @author: LokHim
 '''
+import os
+import tensorflow as tf
 import gc
 import glob
 import time
@@ -14,8 +16,8 @@ from llh.Python.keras.face_regonition.input.input_name import FILESET, URLBASE
 from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
 from llh.Python.keras.face_regonition.output import MODEL_LIST
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 PADDING_SIZE = 5
-
 
 def setOfIntersection(income, origin):
     income_x = {x for x in range(income[0], income[2] + 1)}
@@ -82,9 +84,9 @@ def crop_negative(face_list, image):
         location_set.add(bbox)
 
     for location in location_set:
-        width = location[2] - location[0]
-        height = location[3] - location[1]
-        size_list.append([width, height])
+        swidth = location[2] - location[0]
+        sheight = location[3] - location[1]
+        size_list.append([swidth, sheight])
 
     for size in size_list:
         for x_start, y_start in product(range(0, width, size[0]), range(0, height, size[1])):
@@ -175,13 +177,15 @@ def saveImage(name, function):
             continue
 
         # Process Begin
-        process = mp.Process(target=processImage, args=(name,filename,function,path_str,total_crop,))
-        process.start()
-        process.join()
+        else:
+            process = mp.Process(target=processImage, args=(name,filename,function,path_str,total_crop,))
+            process.start()
+            process.join()
 
     print('Number of Cropped Image Save: ', total_crop.value)
 
 
 if __name__ == "__main__":
     # Total Faces: 5171
-    saveImage('12-net-calibration', cropResult)
+    #saveImage('12-net-calibration', crop_face)
+    saveImage('12-net', crop_negative)

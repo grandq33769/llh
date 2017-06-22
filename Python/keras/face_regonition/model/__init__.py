@@ -6,9 +6,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from llh.Python.keras.face_regonition.input.input_image import all_data
 
 
-BATCH_SIZE = 128
+BATCH_SIZE = 256
 NUM_CLASSES = 2
-EPOCHS = 200
+EPOCHS = 100
 
 __all__ = ['BATCH_SIZE', 'NUM_CLASSES', 'EPOCHS','Sequential',\
            'Dense', 'Activation', 'Flatten','Conv2D', 'MaxPooling2D',\
