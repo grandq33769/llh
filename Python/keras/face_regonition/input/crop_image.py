@@ -3,7 +3,7 @@ Created on 2017年5月3日
 
 @author: LokHim
 '''
-import gc
+import os
 import glob
 import time
 import multiprocessing as mp
@@ -82,9 +82,9 @@ def crop_negative(face_list, image):
         location_set.add(bbox)
 
     for location in location_set:
-        width = location[2] - location[0]
-        height = location[3] - location[1]
-        size_list.append([width, height])
+        swidth = location[2] - location[0]
+        sheight = location[3] - location[1]
+        size_list.append([swidth, sheight])
 
     for size in size_list:
         for x_start, y_start in product(range(0, width, size[0]), range(0, height, size[1])):
@@ -93,8 +93,7 @@ def crop_negative(face_list, image):
             if any([is_overlap(rbox, loc) for loc in location_set]):
                 pass
             else:
-                croped_image = image.crop(rbox)
-                return_list.append(croped_image)
+                return_list.append(rbox)
     return return_list
 
 
@@ -103,8 +102,7 @@ def crop_face(face_list, image):
     return_list = []
     for face in face_list:
         bbox = location_of_face(face)
-        new_image = image.rotate(face.angle).crop(bbox)
-        return_list.append(new_image)
+        return_list.append(bbox)
     return return_list
 
 
@@ -112,15 +110,17 @@ def crop(image, image_size, spacing):
     '''A function to crop all window in an image'''
     return_set = []
     width, height = image.size
-    for x_start, y_start in product(range(0, width - image_size[0], spacing), range(0, height - image_size[1], spacing)):
+    for x_start, y_start in product(range(0, width - image_size[0], spacing),
+                                    range(0, height - image_size[1], spacing)):
         rbox = (x_start, y_start, x_start +
                 image_size[0], y_start + image_size[1])
         return_set.append(rbox)
     return return_set
 
-def processImage(name,filename,function,path_str,total_crop):
+
+def processImage(name, filename, function, path_str, total_crop):
     start_time = time.time()
-    
+
     total_list = [[], []]
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
         if function.__name__ == 'cropResult':
@@ -143,39 +143,43 @@ def processImage(name,filename,function,path_str,total_crop):
                     file_index += 1
                     total_crop.value += 1
 
-        total_time = time.time()-start_time
-        print(filename,'Process Finished. Processing Time: {:.3f} sec'.format(total_time))
+        total_time = time.time() - start_time
+        print(
+            filename, 'Process Finished. Processing Time: {:.3f} sec'.format(total_time))
 
 
 def saveImage(name, function):
     '''A function can crop Positive/Negative image and save to specific path'''
     total = 0
-    total_crop = mp.Value('i',0)
+    total_crop = mp.Value('i', 0)
+    save_path = [URLBASE + '/Input_Data/' + name + '_Positive.txt',
+                 URLBASE + '/Input_Data/' + name + '_Negative.txt']
+    # try:
+
     for filename in FILESET:
-        print('\nProcessing : ', filename, 'Number of Image Processed : ', total)
-        file_name = filename.replace('/', '_')
-        save_path = [URLBASE + '/Input_Data/' + name + '/Positive/' + file_name,
-                     URLBASE + '/Input_Data/' + name + '/Negative/' + file_name]
+        print('\nProcessing : ', filename,
+              'Number of Image Processed : ', total)
         total += 1
 
         # Determine image has been processed
         break_flag = False
-        path_str = []
         if function.__name__ == 'cropResult':
-            path_str = [path.replace('_big', '') for path in save_path]
+            index = filename.replace('/big', '')
         else:
-            path_str = save_path
+            index = filename
 
-        for path in path_str:
-            if(glob.glob(path + '_*') != []):
+        for path in save_path:
+            if os.path.isfile(path):
                 print(function.__name__, filename, 'had already processed...')
                 break_flag = True
                 break
-        if(break_flag == True):
+
+        if break_flag:
             continue
 
         # Process Begin
-        process = mp.Process(target=processImage, args=(name,filename,function,path_str,total_crop,))
+        process = mp.Process(target=processImage, args=(
+            name, filename, function, path_str, total_crop,))
         process.start()
         process.join()
 
