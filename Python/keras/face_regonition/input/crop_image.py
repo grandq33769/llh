@@ -4,8 +4,6 @@ Created on 2017年5月3日
 @author: LokHim
 '''
 import os
-import tensorflow as tf
-import gc
 import glob
 import time
 import multiprocessing as mp
@@ -96,8 +94,7 @@ def crop_negative(face_list, image):
             if any([is_overlap(rbox, loc) for loc in location_set]):
                 pass
             else:
-                croped_image = image.crop(rbox)
-                return_list.append(croped_image)
+                return_list.append(rbox)
     return return_list
 
 
@@ -106,8 +103,7 @@ def crop_face(face_list, image):
     return_list = []
     for face in face_list:
         bbox = location_of_face(face)
-        new_image = image.rotate(face.angle).crop(bbox)
-        return_list.append(new_image)
+        return_list.append(bbox)
     return return_list
 
 
@@ -115,7 +111,8 @@ def crop(image, image_size, spacing):
     '''A function to crop all window in an image'''
     return_set = []
     width, height = image.size
-    for x_start, y_start in product(range(0, width - image_size[0], spacing), range(0, height - image_size[1], spacing)):
+    for x_start, y_start in product(range(0, width - image_size[0], spacing),
+                                    range(0, height - image_size[1], spacing)):
         rbox = (x_start, y_start, x_start +
                 image_size[0], y_start + image_size[1])
         return_set.append(rbox)
@@ -156,36 +153,61 @@ def saveImage(name, function):
     '''A function can crop Positive/Negative image and save to specific path'''
     total = 0
     total_crop = mp.Value('i', 0)
+<<<<<<< HEAD
     for filename in FILESET:
         print('\nProcessing : ', filename,
               'Number of Image Processed : ', total)
         file_name = filename.replace('/', '_')
         save_path = [URLBASE + '/Input_Data/' + name + '/Positive/' + file_name,
                      URLBASE + '/Input_Data/' + name + '/Negative/' + file_name]
+=======
+    save_path = [URLBASE + '/Input_Data/' + name + '_Positive.txt',
+                 URLBASE + '/Input_Data/' + name + '_Negative.txt']
+    # try:
+
+    for filename in FILESET:
+        print('\nProcessing : ', filename,
+              'Number of Image Processed : ', total)
+>>>>>>> b13618b6f40c97960bc7d4985ab95b27291475c8
         total += 1
 
         # Determine image has been processed
         break_flag = False
-        path_str = []
         if function.__name__ == 'cropResult':
-            path_str = [path.replace('_big', '') for path in save_path]
+            index = filename.replace('/big', '')
         else:
-            path_str = save_path
+            index = filename
 
-        for path in path_str:
-            if(glob.glob(path + '_*') != []):
+        for path in save_path:
+            if os.path.isfile(path):
                 print(function.__name__, filename, 'had already processed...')
                 break_flag = True
                 break
-        if(break_flag == True):
+
+        if break_flag:
             continue
 
         # Process Begin
+<<<<<<< HEAD
         else:
             process = mp.Process(target=processImage, args=(
                 name, filename, function, path_str, total_crop,))
             process.start()
             process.join()
+=======
+<< << << < HEAD
+    process = mp.Process(target=processImage, args=(
+        name, filename, function, path_str, total_crop,))
+    process.start()
+    process.join()
+== == == =
+    else:
+        process = mp.Process(target=processImage, args=(
+            name, filename, function, path_str, total_crop,))
+        process.start()
+        process.join()
+>>>>>> > 57c4858306ed82cdbbf34c439d7c2fec9f541e13
+>>>>>>> b13618b6f40c97960bc7d4985ab95b27291475c8
 
     print('Number of Cropped Image Save: ', total_crop.value)
 

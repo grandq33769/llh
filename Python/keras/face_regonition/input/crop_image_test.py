@@ -9,15 +9,15 @@ import numpy as np
 from PIL import Image, ImageDraw
 from llh.Python.keras.face_regonition.input.input_name import URLBASE
 from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
-from llh.Python.keras.face_regonition.input.crop_image import crop_face, location_of_face
+from llh.Python.keras.face_regonition.input.crop_image import crop_face, crop_negative, location_of_face
 
 
 class Test(unittest.TestCase):
     '''Test for image input and crop the face image'''
 
     def setUp(self):
-        self.filename = '2002/09/01/big/img_16680.jpg'
-        self.image = Image.open(URLBASE + '/' + self.filename, 'r')
+        self.filename = '2002/09/01/big/img_16680'
+        self.image = Image.open(URLBASE + '/' + self.filename + '.jpg', 'r')
 
     def tearDown(self):
         self.image.close()
@@ -58,6 +58,7 @@ class Test(unittest.TestCase):
         self.image.show()
 
     # Final Method
+    @unittest.skip
     def test_draw3(self):
         '''Test case 3 for drawing a ellipse on face image'''
         ed_list = LOCATION_DICT[self.filename]
@@ -71,6 +72,26 @@ class Test(unittest.TestCase):
         for findex, croped_face in enumerate(crop_face(ed_list, self.image)):
             for iindex, croped_image in enumerate(croped_face):
                 croped_image.save(save_path, findex, '_', iindex, '.jpg')
+        self.image.show()
+
+    def test_draw4(self):
+        '''Test case 4 for drawing positive window and negative window'''
+        draw = ImageDraw.Draw(self.image)
+        pboxes = crop_face(LOCATION_DICT[self.filename], self.image)
+        nboxes = crop_negative(LOCATION_DICT[self.filename], self.image)
+
+        i = 1
+        for box in pboxes:
+            draw.rectangle(box, outline='green')
+            self.image.crop(box).resize((12, 12), Image.ANTIALIAS).save(URLBASE + '/Example/' +
+                                                                        self.filename.replace('/', '_') + '_' + str(i) + '.jpg')
+            i += 1
+
+        for box in nboxes:
+            draw.rectangle(box, outline='red')
+
+        self.image.save(URLBASE + '/Example/' +
+                        self.filename.replace('/', '_') + '.jpg')
         self.image.show()
 
 
