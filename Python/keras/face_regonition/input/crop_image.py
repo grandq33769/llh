@@ -14,6 +14,7 @@ from llh.Python.keras.face_regonition.input.input_name import FILESET, URLBASE
 from llh.Python.keras.face_regonition.input.input_ellipse import LOCATION_DICT
 from llh.Python.keras.face_regonition.output import MODEL_LIST
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 PADDING_SIZE = 5
 
 
@@ -178,14 +179,23 @@ def saveImage(name, function):
             continue
 
         # Process Begin
+<< << << < HEAD
+    process = mp.Process(target=processImage, args=(
+        name, filename, function, path_str, total_crop,))
+    process.start()
+    process.join()
+== == == =
+    else:
         process = mp.Process(target=processImage, args=(
             name, filename, function, path_str, total_crop,))
         process.start()
         process.join()
+>>>>>> > 57c4858306ed82cdbbf34c439d7c2fec9f541e13
 
     print('Number of Cropped Image Save: ', total_crop.value)
 
 
 if __name__ == "__main__":
     # Total Faces: 5171
-    saveImage('12-net-calibration', cropResult)
+    #saveImage('12-net-calibration', crop_face)
+    saveImage('12-net', crop_negative)

@@ -11,7 +11,7 @@ from llh.Python.keras.face_regonition.input import URLBASE
 
 
 TRAIN_PROP = 0.7
-NUM_PROCESS = 3
+NUM_PROCESS = 5
 INPUT_DATA_PATH = '/Input_Data'
 
 #mode: Positive/Negative #net: '12-net','12-net-calibration','24-net','24-net-calibration','48-net','48-net-calibration' #corpus : 'Training','Testing'
@@ -33,15 +33,27 @@ def seperate_data(corpus,net,mode,size,lock):
         batch_size = int(total-batch_size-size[1]-size[2])
         dst = dst_te
         
-    for _ in range(batch_size):
-        file = random.choice(os.listdir(src))
-        file_str = str(file)
-        shutil.move(src + file_str,  dst)
-
+    for size in range(int(batch_size/NUM_PROCESS)):
+        flag = True
+        while flag:
+            try:
+                file = random.choice(os.listdir(src))
+            except (IndexError,ValueError):
+                return
+            
+            file_str = str(file)
+            
+            try:
+                shutil.move(src + file_str,  dst)
+                flag = False
+            except (shutil.Error,FileNotFoundError):
+                continue
+            
         lock.acquire()
         try:
-            print(net,corpus,mode,' File Moved in :')
+            print('\n',net,corpus,mode,' File Moved in :')
             print(file_str)
+            print('Process id:', os.getpid(),'File Remain:',int((batch_size/NUM_PROCESS) - size))
         finally:
             lock.release()
 

@@ -8,7 +8,7 @@ import random
 import unittest
 import shutil
 from llh.Python.keras.face_regonition.input.input_name import URLBASE
-
+from llh.Python.keras.face_regonition.input.move_file import INPUT_DATA_PATH
 
 class Test(unittest.TestCase):
     '''Test for moving file '''
@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
             self.src) if os.path.isfile(self.src + name)])
         print(lenght)
         self.assertTrue(lenght > 0, 'Invaild Lenght')
-
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

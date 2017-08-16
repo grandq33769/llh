@@ -3,6 +3,7 @@ Created on 2017年6月15日
 
 @author: LokHim
 '''
+import os
 import gc
 import time
 import numpy as np
@@ -17,13 +18,14 @@ from llh.Python.keras.face_regonition.output import MODEL_LIST
 S_LIST = [0.83, 0.91, 1.0, 1.10, 1.21]
 X_LIST = [-0.17, 0, 0.17]
 Y_LIST = [-0.17, 0, 0.17]
-THRESHOLD = {'12-net': 0.999, '12-net-calibration': 0.999}
-NMS_THRESHOLD = {'12-net-calibration': 0.9}
+THRESHOLD = {'12-net': 0.99999, '12-net-calibration': 5}
+NMS_THRESHOLD = {'12-net-calibration': 0.8}
 
 
 def predict(name, box_list, image):
     now_index = MODEL_LIST.index(name)
-    model = load_model(URLBASE + '/Model/' + name + '.h5')
+    mpath = os.path.join(os.path.dirname(__file__), '../model/'+name+'.h5')
+    model = load_model(mpath)
     input_size = int(name[:2])
     threshold = THRESHOLD[name]
     return_list = []
@@ -43,7 +45,7 @@ def predict(name, box_list, image):
         blist = box_list
         start_time = time.time()
         return_list = getResult(model, threshold, image, blist, input_size)
-
+        
     total_time = time.time() - start_time
     print('End of', name, '...... Processing Time : {:.3f} sec'.format(total_time))
     return return_list
@@ -56,14 +58,14 @@ def getResult(model, threshold, image, blist, input_size):
         x_train[index] = transform(crop_image, (input_size, input_size, 3))
 
     output = model.predict(x_train)
-    return_list = []
-    for index, result in enumerate(output):
-        if result[1] > threshold:
-            return_list.append(blist[index])
-
-    del x_train
+    result_list = []
+    for index,result in enumerate(output):
+        if(result [1] > threshold):
+            result_list.append(blist[index])
+    
+    del x_train,output
     gc.collect()
-    return return_list
+    return result_list
 
 
 def getCalResult(model, threshold, image, box, input_size):
@@ -73,19 +75,19 @@ def getCalResult(model, threshold, image, box, input_size):
         crop_image = image.crop(calibrationTransform(box, cbox))
         x_train[index] = transform(crop_image, (input_size, input_size, 3))
 
-    output = model.predict(x_train)
+    output = [result[1] for result in model.predict(x_train)]
+    soutput = sorted(range(len(output)), key=lambda k: output[k])
     result_list = []
-    for index, result in enumerate(output):
-        if result[1] > threshold:
-            result_list.append(cbox_list[index])
-
+    for result in soutput[-threshold:]:
+        result_list.append(cbox_list[result])
+        
     if(result_list != []):
         result = calibrationTransform(box, tuple(
             sum(i) / len(result_list) for i in zip(*result_list)))
     else:
         result = box
 
-    del x_train, cbox_list
+    del x_train, cbox_list, output, soutput, result_list
     gc.collect()
     return result
 
