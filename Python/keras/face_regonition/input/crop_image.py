@@ -19,6 +19,7 @@ from llh.Python.keras.face_regonition.output import MODEL_LIST
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 PADDING_SIZE = 5
 
+
 def setOfIntersection(income, origin):
     income_x = {x for x in range(income[0], income[2] + 1)}
     income_y = {y for y in range(income[1], income[3] + 1)}
@@ -120,9 +121,10 @@ def crop(image, image_size, spacing):
         return_set.append(rbox)
     return return_set
 
-def processImage(name,filename,function,path_str,total_crop):
+
+def processImage(name, filename, function, path_str, total_crop):
     start_time = time.time()
-    
+
     total_list = [[], []]
     with Image.open(URLBASE + '/' + filename + '.jpg', 'r') as img:
         if function.__name__ == 'cropResult':
@@ -145,16 +147,18 @@ def processImage(name,filename,function,path_str,total_crop):
                     file_index += 1
                     total_crop.value += 1
 
-        total_time = time.time()-start_time
-        print(filename,'Process Finished. Processing Time: {:.3f} sec'.format(total_time))
+        total_time = time.time() - start_time
+        print(
+            filename, 'Process Finished. Processing Time: {:.3f} sec'.format(total_time))
 
 
 def saveImage(name, function):
     '''A function can crop Positive/Negative image and save to specific path'''
     total = 0
-    total_crop = mp.Value('i',0)
+    total_crop = mp.Value('i', 0)
     for filename in FILESET:
-        print('\nProcessing : ', filename, 'Number of Image Processed : ', total)
+        print('\nProcessing : ', filename,
+              'Number of Image Processed : ', total)
         file_name = filename.replace('/', '_')
         save_path = [URLBASE + '/Input_Data/' + name + '/Positive/' + file_name,
                      URLBASE + '/Input_Data/' + name + '/Negative/' + file_name]
@@ -178,7 +182,8 @@ def saveImage(name, function):
 
         # Process Begin
         else:
-            process = mp.Process(target=processImage, args=(name,filename,function,path_str,total_crop,))
+            process = mp.Process(target=processImage, args=(
+                name, filename, function, path_str, total_crop,))
             process.start()
             process.join()
 
