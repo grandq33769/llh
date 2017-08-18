@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    /* CSS goes here. */
+</style>
+<svg width="800px" height="600px" viewbox="0 0 800 600"></svg>
+
+<body>
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script>
+        d3.json("tw.json", function (topodata) {
+            var features = topojson.feature(topodata, topodata.objects["COUNTY_MOI_1060525"]).features;
+            // 這裡要注意的是 topodata.objects["county"] 中的 "county" 為原本 shp 的檔名
+            var path = d3.geoPath().projection( // 路徑產生器
+                d3.geoMercator().center([121, 24]).scale(6000) // 座標變換函式
+            );
+            d3.select("svg").selectAll("path").data(features)
+                .enter().append("path").attr("d", path);
+        });
+    </script>
+</body>
