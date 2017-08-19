@@ -5,6 +5,7 @@ BASE_URL = os.path.dirname(__file__)
 PATH = BASE_URL + '/data/influenza_2.csv'
 RAWDATA = set()
 
+
 class Data():
     """A Class for a tuple of data"""
 
@@ -30,23 +31,24 @@ with open(PATH, encoding='utf-8') as file:
             if(int(datalist[1]) > 12):
                 wflag = True
                 break
-    
-    for line in RAWLIST:  
+
+    for line in RAWLIST:
         datalist = line.split(',')
         if(len(datalist) == 8):
-            #Process the year to be normalized
+            # Process the year to be normalized
             try:
                 year = int(datalist[0])
             except ValueError:
-                year = int(datalist[0][-4:]) 
-                
+                year = int(datalist[0][-4:])
+
             if(wflag == True):
                 temp_date = str(year) + '-W' + datalist[1].zfill(2)
-                #convert week in year to month
-                month = datetime.datetime.strptime(temp_date + '-0', "%Y-W%W-%w").month
-            
+                # convert week in year to month
+                month = datetime.datetime.strptime(
+                    temp_date + '-0', "%Y-W%W-%w").month
+
             else:
                 month = datalist[1]
-                
+
             data = Data(year, month, datalist[2], datalist[7])
             RAWDATA.add(data)
