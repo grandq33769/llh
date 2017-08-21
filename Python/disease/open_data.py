@@ -26,6 +26,8 @@ with open(PATH, encoding='utf-8') as file:
     wflag = False
     RAWLIST = file.read().split('\n')
     for line in RAWLIST:
+        lstr = line.encode('utf-8')
+        print(lstr)
         datalist = line.split(',')
         if(len(datalist) == 8):
             if(int(datalist[1]) > 12):
