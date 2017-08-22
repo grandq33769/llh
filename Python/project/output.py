@@ -33,7 +33,7 @@ with open('Absent Word.txt', 'w') as file:
 
 with open('校園友善問卷資料_文字_結果(Sim).csv', 'w', encoding='utf-8') as file:
     firstline = "ID,QNo,Word,"
-    numlist = [n + 1 for n in range(len(SDICT['1'][1]))]
+    numlist = [n + 1 for n in range(NUM_ATT)]
     for num in numlist:
         firstline += str(num) + ','
     firstline = firstline[:-1] + '\n'
