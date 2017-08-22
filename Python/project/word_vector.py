@@ -12,10 +12,19 @@ for sid, ans_dict in SDICT.items():
         word_dict = dict()
         for word in ans_list:
             try:
+                # Representation as Vector
+                '''
                 vector = MODEL.wv[word]
                 word_dict.update({word: vector})
+                '''
+                # Representation as Similarity of Top5
+                slist = MODEL.most_similar(word, topn=5)
+                word_dict.update({word: [v[0] for v in slist]})
+
             except KeyError:
                 print(sid, word)
                 NULL_SET.add(word)
                 word_dict.update({word: 0})
+
         ans_dict.update({qno: word_dict})
+        print(sid, qno, " Update Finish")
