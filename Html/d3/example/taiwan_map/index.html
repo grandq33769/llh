@@ -17,6 +17,18 @@
             );
             d3.select("svg").selectAll("path").data(features)
                 .enter().append("path").attr("d", path);
+            var birth_rate = { '花蓮市': 1115, '澎湖市': 1125, '彰化市': 1110, '臺東市': 1060, '宜蘭市': 1030, '嘉義市': 830, '金門市': 1380, '雲林市': 995, '高雄市': 965, '屏東市': 820, '臺南市': 980, '新竹市': 1300, '苗栗市': 1270, '臺中市': 1090, '連江市': 1760, '南投市': 905, '臺北市': 1205 };
+            // for (i = features.length - 1; i >= 0; i--) {
+            //     features[i].properties.birth_rate = birth_rate[features[i].properties.C_Name];
+            // }
+            console.log(features)
+            var color = d3.scaleLinear().domain([900, 1800]).range(["#090", "#f00"]);
+            d3.select("svg").selectAll("path").data(features).attr({
+                d: path,
+                fill: function (d) {
+                    return color(d.properties.birth_rate);
+                }
+            });
         });
     </script>
 </body>
