@@ -2,9 +2,10 @@
 Output the result of questionair
 '''
 import csv
-import pickle
 from llh.Python.project import CPATH
+from llh.Python.project.input_data import word_cluster
 from llh.Python.project.word_vector import word2vec
+from llh.Python.project.combine import combine
 
 NUM_ATT = 5
 NOLIST = [str(n + 1) for n in range(222)]  # Data 序列 1 ~ 222
@@ -12,20 +13,19 @@ NOLIST2 = ['2-' + str(n + 1) for n in range(331)]  # Data 序列 2-1 ~ 2-331
 IDLIST = NOLIST + NOLIST
 
 
-def write_cluster():
+def write_cluster(num_cluster):
     '''
     Output the result of Clustering
     '''
     outlist = list()
-    with open(CPATH + '/word_result.pickle', 'rb') as variable:
-        wlist, allresult = pickle.load(variable)
-        for cno, word in enumerate(wlist):
-            templist = list()
-            templist.append(word)
-            templist.extend([allresult[x].labels_[cno] for x in range(10, 41)])
-            outlist.append(templist)
+    wlist, result = word_cluster(num_cluster)
+    for cno, word in enumerate(wlist):
+        templist = list()
+        templist.append(word)
+        templist.append(result.labels_[cno])
+        outlist.append(templist)
 
-    with open(CPATH + '/校園友善問卷資料_文字_Cluster.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open(CPATH + '/Cluster_Index(' + str(num_cluster) + ').csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in outlist:
@@ -116,5 +116,20 @@ def write_word2vec():
                 qflag = False
 
 
+def write_combine(num_cluster):
+    '''
+    Output the result of combined data as csv
+    '''
+    out = combine(num_cluster)
+    with open(CPATH + '/校園友善問卷資料_normalized(' + str(num_cluster) + ').csv', 'w',
+              newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for sid, datas in out.items():
+            line = [sid] + datas
+            writer.writerow(line)
+
+
 if __name__ == '__main__':
-    write_absent()
+    # write_combine(50)
+    write_cluster(20)

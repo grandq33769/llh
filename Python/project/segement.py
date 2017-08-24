@@ -2,9 +2,9 @@
 Cut the answer into word
 '''
 import jieba
-from llh.Python.project.input_data import data
+from llh.Python.project.input_data import word
 DICT_PATH = 'D://Code/llh/Python/project/jieba_dict/'
-EXAMPLE = '116'
+EXAMPLE = '88'
 
 
 def segement():
@@ -12,7 +12,7 @@ def segement():
     Cut answer into word
     Return: Dict{sid: ans_dict}
     '''
-    sdict = data()
+    sdict = word()
     # jieba custom setting.
     jieba.set_dictionary(DICT_PATH + '/dict.txt.big')
 
@@ -22,7 +22,7 @@ def segement():
         for line in swords:
             stops.add(line.strip('\n'))
 
-    #print('Before:', sdict[EXAMPLE])
+    print('Before:', sdict[EXAMPLE])
 
     for _, ans_dict in sdict.items():
         for qno, ans in ans_dict.items():
@@ -31,7 +31,7 @@ def segement():
                 word for word in words if word not in stops and word != ' ']
             ans_dict.update({qno: clist})
 
-    #print('After:', sdict[EXAMPLE])
+    print('After:', sdict[EXAMPLE])
     return sdict
 
 

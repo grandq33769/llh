@@ -3,10 +3,8 @@ Convert all word to word2vec Vector
 '''
 
 from gensim import models
+from llh.Python.project import MPATH
 from llh.Python.project.segement import segement
-
-MPATH = "D:/Code/llh/Python/word_embedding/"
-MODEL = models.Word2Vec.load(MPATH + 'med250.model.bin')
 
 
 def word2vec():
@@ -14,6 +12,7 @@ def word2vec():
     Convert all word to vector form
     Return: Dict{word:vector} & Null Set(word cant convert to vector)
     '''
+    model = models.Word2Vec.load(MPATH + '/med250.model.bin')
     nullset = set()
     sdict = segement()
     for sid, ans_dict in sdict.items():
@@ -23,11 +22,11 @@ def word2vec():
                 try:
                     # Representation as Vector
                     '''
-                    vector = MODEL.wv[word]
+                    vector = model.wv[word]
                     word_dict.update({word: vector})
                     '''
                     # Representation as Similarity of Top5
-                    slist = MODEL.most_similar(word, topn=5)
+                    slist = model.most_similar(word, topn=5)
                     word_dict.update({word: [v[0] for v in slist]})
 
                 except KeyError:

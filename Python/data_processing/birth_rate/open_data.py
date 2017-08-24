@@ -12,7 +12,7 @@ print(BASE_URL)
 PATH = BASE_URL + '/Birth_Rate.csv'
 
 
-def open():
+def open_birth_rate():
     '''
     Input & Modify data
     '''
@@ -58,4 +58,4 @@ def open():
 
 
 if __name__ == '__main__':
-    open()
+    open_birth_rate()()
