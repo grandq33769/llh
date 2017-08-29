@@ -10,6 +10,13 @@ import pandas as pd
 BASE_URL = os.path.dirname(__file__)
 print(BASE_URL)
 PATH = BASE_URL + '/Birth_Rate.csv'
+COUNTY_ENG = {'花蓮': 'Hualien', '澎湖': 'Penghu', '彰化': 'Changhua',
+              '臺東': 'Taitung', '宜蘭': 'Yilan', '嘉義': 'Chiayi',
+              '金門': 'Kinmen', '雲林': 'Yunlin', '高雄': 'Kaohsiung',
+              '屏東': 'Pingtung', '臺南': 'Tainan', '新竹': 'Hsinchu',
+              '苗栗': 'Miaoli', '臺中': 'Taichung', '連江': 'Lienchiang',
+              '南投': 'Nantou', '臺北': 'Taipei', '新北': 'New Taipei',
+              '桃園': 'Taoyuan', '基隆': 'Keelung'}
 
 
 def open_birth_rate():
@@ -32,7 +39,7 @@ def open_birth_rate():
     ''' 存在的顯示 '''
     # dataframe2 = dataframe[dataframe.isin([to_replace])]
     ''' 檢查 Match Pattern '''
-    pattern = '.*縣[^\(]'
+    pattern = '.*[縣|市][^\(]'
     # print(re.match(pattern, '台南縣'))
     alist = [a for a in dataframe.columns[:2]] + \
         [a for a in dataframe.columns if re.match(pattern, a)]
@@ -50,7 +57,11 @@ def open_birth_rate():
 
     rdict = dict()
     for loc in realframe.columns[2:]:
-        index = loc[-4:-1]
+        index = COUNTY_ENG[loc[-4:-2]]
+        if loc[-2:-1] == '市':
+            index += ' City'
+        else:
+            index += ' County'
         value = realframe.loc[18, loc].strip()[:-3].replace(',', '')
         rdict.update({index: int(value)})
 
@@ -58,4 +69,4 @@ def open_birth_rate():
 
 
 if __name__ == '__main__':
-    open_birth_rate()()
+    print(open_birth_rate())

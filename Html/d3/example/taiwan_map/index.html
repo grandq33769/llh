@@ -7,28 +7,56 @@
 
 <body>
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.js" charset="utf-8"></script>
     <script src="https://d3js.org/topojson.v1.min.js"></script>
     <script>
+        var birth_rate = {
+            'Hsinchu County': 1300,
+            'Tainan City': 980,
+            'Lienchiang County': 1760,
+            'Taichung City': 1090,
+            'Penghu County': 1125,
+            'Hsinchu City': 1395,
+            'New Taipei City': 1060,
+            'Chiayi County': 830,
+            'Keelung City': 790,
+            'Chiayi City': 940,
+            'Yilan County': 1030,
+            'Pingtung County': 820,
+            'Kaohsiung County': 965,
+            'Hualien County': 1115,
+            'Miaoli County': 1270,
+            'Taitung County': 1060,
+            'Taipei County': 1205,
+            'Kaohsiung City': 965,
+            'Tainan County': 980,
+            'Taichung County': 1090,
+            'Taoyuan City': 1000,
+            'Kinmen County': 1380,
+            'Changhua County': 1110,
+            'Yunlin County': 995,
+            'Nantou County': 905,
+            'Taipei City': 1205
+        };
         d3.json("tw.json", function (topodata) {
+
             var features = topojson.feature(topodata, topodata.objects["COUNTY_MOI_1060525"]).features;
             // 這裡要注意的是 topodata.objects["county"] 中的 "county" 為原本 shp 的檔名
+            var color = d3.scaleLinear().domain([900, 1800]).range(["#090", "#f00"]);
             var path = d3.geoPath().projection( // 路徑產生器
                 d3.geoMercator().center([121, 24]).scale(6000) // 座標變換函式
             );
-            d3.select("svg").selectAll("path").data(features)
-                .enter().append("path").attr("d", path);
-            var birth_rate = { '花蓮市': 1115, '澎湖市': 1125, '彰化市': 1110, '臺東市': 1060, '宜蘭市': 1030, '嘉義市': 830, '金門市': 1380, '雲林市': 995, '高雄市': 965, '屏東市': 820, '臺南市': 980, '新竹市': 1300, '苗栗市': 1270, '臺中市': 1090, '連江市': 1760, '南投市': 905, '臺北市': 1205 };
-            // for (i = features.length - 1; i >= 0; i--) {
-            //     features[i].properties.birth_rate = birth_rate[features[i].properties.C_Name];
-            // }
-            console.log(features)
-            var color = d3.scaleLinear().domain([900, 1800]).range(["#090", "#f00"]);
-            d3.select("svg").selectAll("path").data(features).attr({
-                d: path,
-                fill: function (d) {
-                    return color(d.properties.birth_rate);
-                }
-            });
+            for (i = features.length - 1; i >= 0; i--) {
+                features[i].properties.birth_rate = birth_rate[features[i].properties.COUNTYENG];
+            }
+            d3.select("svg").selectAll("path").data(features).enter().append("path");
+            function update() {
+                d3.select("svg").selectAll("path").attrs({
+                    d: path,
+                    fill: function (d) { return color(d.properties.birth_rate); }
+                });
+            }
+            update();
         });
     </script>
 </body>
