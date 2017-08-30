@@ -9,6 +9,7 @@
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.js" charset="utf-8"></script>
     <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
     <script>
         var birth_rate = {
             'Hsinchu County': 1300,
@@ -38,6 +39,42 @@
             'Nantou County': 905,
             'Taipei City': 1205
         };
+        var chinese = {
+            'Hualien': '花蓮',
+            'Tainan': '臺南',
+            'Taichung': '臺中',
+            'Taipei': '臺北',
+            'Changhua': '彰化',
+            'Hsinchu': '新竹',
+            'Penghu': '澎湖',
+            'Kinmen': '金門',
+            'Keelung': '基隆',
+            'Yilan': '宜蘭',
+            'Miaoli': '苗栗',
+            'Chiayi': '嘉義',
+            'Taoyuan': '桃園',
+            'Pingtung': '屏東',
+            'Taitung': '臺東',
+            'Nantou': '南投',
+            'Yunlin': '雲林',
+            'Kaohsiung': '高雄',
+            'New Taipei': '新北',
+            'Lienchiang': '連江'
+        };
+        function eng2chin(name) {
+            sname = name.split(" ")
+            if (sname.length > 2) {
+                fname = chinese[sname[0].concat(' ').concat(sname[1])]
+                sname[1] = sname[2]
+            }
+            else
+                fname = chinese[sname[0]]
+            if (sname[1] === 'City')
+                rname = fname.concat('市')
+            else
+                rname = fname.concat('縣')
+            return rname
+        };
         d3.json("tw.json", function (topodata) {
 
             var features = topojson.feature(topodata, topodata.objects["COUNTY_MOI_1060525"]).features;
@@ -48,12 +85,16 @@
             );
             for (i = features.length - 1; i >= 0; i--) {
                 features[i].properties.birth_rate = birth_rate[features[i].properties.COUNTYENG];
+                features[i].properties.C_Name = eng2chin(features[i].properties.COUNTYENG)
             }
             d3.select("svg").selectAll("path").data(features).enter().append("path");
             function update() {
                 d3.select("svg").selectAll("path").attrs({
                     d: path,
                     fill: function (d) { return color(d.properties.birth_rate); }
+                }).on("mouseover", function (d) {
+                    $("#name").text(d.properties.C_Name);
+                    $("#density").text(d.properties.birth_rate);
                 });
             }
             update();

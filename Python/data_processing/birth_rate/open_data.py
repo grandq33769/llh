@@ -7,8 +7,7 @@ import re
 import numpy as np
 import pandas as pd
 
-BASE_URL = os.path.dirname(__file__)
-print(BASE_URL)
+BASE_URL = '/Users/lhleung/Documents/Data'
 PATH = BASE_URL + '/Birth_Rate.csv'
 COUNTY_ENG = {'花蓮': 'Hualien', '澎湖': 'Penghu', '彰化': 'Changhua',
               '臺東': 'Taitung', '宜蘭': 'Yilan', '嘉義': 'Chiayi',
@@ -17,6 +16,25 @@ COUNTY_ENG = {'花蓮': 'Hualien', '澎湖': 'Penghu', '彰化': 'Changhua',
               '苗栗': 'Miaoli', '臺中': 'Taichung', '連江': 'Lienchiang',
               '南投': 'Nantou', '臺北': 'Taipei', '新北': 'New Taipei',
               '桃園': 'Taoyuan', '基隆': 'Keelung'}
+
+
+def chin2eng():
+    '''
+    Give a dictionary with chinese taiwan county key and english name value
+    Return: dict{Chinese:Eng}
+    '''
+    return COUNTY_ENG
+
+
+def eng2chin():
+    '''
+    Give a dictionary with english taiwan county key and chinese name value
+    Return: dict{Eng:Chinese}
+    '''
+    rdict = dict()
+    for key, value in COUNTY_ENG.items():
+        rdict.update({value: key})
+    return rdict
 
 
 def open_birth_rate():
@@ -69,4 +87,4 @@ def open_birth_rate():
 
 
 if __name__ == '__main__':
-    print(open_birth_rate())
+    print(eng2chin())
