@@ -41,6 +41,7 @@ def open_birth_rate():
     '''
     Input & Modify data
     '''
+    dataFrame = dict()
     dataframe = pd.read_csv(PATH, header=1)
     dataframe = dataframe.rename(columns={'Unnamed: 0': '年份'})
     dataframe = dataframe.loc[:, '年份':'總生育率 / 連江縣 ']
