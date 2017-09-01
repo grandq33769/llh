@@ -1,0 +1,19 @@
+path {
+    cursor: pointer;
+  }
+  
+  #info {
+    position: absolute;
+    top: 250px;
+    right: 400px;
+    width: 100px;
+    text-align: center;
+  } 
+  
+  #name {
+    font-size: 1.2em;
+  }
+  
+  #unit {
+    font-size: 12px;
+  }
