@@ -14,6 +14,10 @@ path {
   #name {
     font-size: 1.6em;
   }
+
+  #birth_rate {
+    font-size: 1.6em;
+  }
   
   #unit {
     font-size: 16px;
