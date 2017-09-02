@@ -1,7 +1,7 @@
 '''Demo script for plotting lift graph of association rule'''
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import AXes3d  # @UnresolvedImport
+from mpl_toolkits.mplot3d import axes3d  # @UnresolvedImport
 import numpy as np
 
 
