@@ -1,143 +1,24 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<svg id="map" width="800px" height="1100px" viewbox="300 0 400 500"></svg>
-<svg id="legend" width="30px" height="300px" viewbox="0 0 30 300"></svg>
 
 <head>
     <title>Taiwan Birth Rate</title>
-    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-    <script src="https://d3js.org/d3-selection-multi.v1.js" charset="utf-8"></script>
-    <script src="https://d3js.org/topojson.v1.min.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 
 <body>
-    <script>
-        var color = d3.scaleLinear().domain([900, 1800]).range(["#090", "#f00"]);
-        var birth_rate = {
-            'Hsinchu County': 1300,
-            'Tainan City': 980,
-            'Lienchiang County': 1760,
-            'Taichung City': 1090,
-            'Penghu County': 1125,
-            'Hsinchu City': 1395,
-            'New Taipei City': 1060,
-            'Chiayi County': 830,
-            'Keelung City': 790,
-            'Chiayi City': 940,
-            'Yilan County': 1030,
-            'Pingtung County': 820,
-            'Kaohsiung County': 965,
-            'Hualien County': 1115,
-            'Miaoli County': 1270,
-            'Taitung County': 1060,
-            'Taipei County': 1205,
-            'Kaohsiung City': 965,
-            'Tainan County': 980,
-            'Taichung County': 1090,
-            'Taoyuan City': 1000,
-            'Kinmen County': 1380,
-            'Changhua County': 1110,
-            'Yunlin County': 995,
-            'Nantou County': 905,
-            'Taipei City': 1205
-        };
-        var chinese = {
-            'Hualien': '花蓮',
-            'Tainan': '臺南',
-            'Taichung': '臺中',
-            'Taipei': '臺北',
-            'Changhua': '彰化',
-            'Hsinchu': '新竹',
-            'Penghu': '澎湖',
-            'Kinmen': '金門',
-            'Keelung': '基隆',
-            'Yilan': '宜蘭',
-            'Miaoli': '苗栗',
-            'Chiayi': '嘉義',
-            'Taoyuan': '桃園',
-            'Pingtung': '屏東',
-            'Taitung': '臺東',
-            'Nantou': '南投',
-            'Yunlin': '雲林',
-            'Kaohsiung': '高雄',
-            'New Taipei': '新北',
-            'Lienchiang': '連江'
-        };
-        function eng2chin(name) {
-            sname = name.split(" ")
-            if (sname.length > 2) {
-                fname = chinese[sname[0].concat(' ').concat(sname[1])]
-                sname[1] = sname[2]
-            }
-            else
-                fname = chinese[sname[0]]
-            if (sname[1] === 'City')
-                rname = fname.concat('市')
-            else
-                rname = fname.concat('縣')
-            return rname
-        };
-        d3.json("tw.json", function (topodata) {
-
-            var features = topojson.feature(topodata, topodata.objects["COUNTY_MOI_1060525"]).features;
-            // 這裡要注意的是 topodata.objects["county"] 中的 "county" 為原本 shp 的檔名
-            var path = d3.geoPath().projection( // 路徑產生器
-                d3.geoMercator().center([121, 24]).scale(6000) // 座標變換函式
-            );
-            for (i = features.length - 1; i >= 0; i--) {
-                features[i].properties.birth_rate = birth_rate[features[i].properties.COUNTYENG];
-                features[i].properties.C_Name = eng2chin(features[i].properties.COUNTYENG)
-            }
-            d3.select("#map").selectAll("path").data(features).enter().append("path");
-            function update() {
-                d3.select("#map").selectAll("path").attrs({
-                    d: path,
-                    fill: function (d) { return color(d.properties.birth_rate); }
-                }).on("mouseover", function (d) {
-                    $("#name").text(d.properties.C_Name);
-                    $("#birth_rate").text(d.properties.birth_rate);
-                });
-            }
-            d3.select("#map").on("mousemove", function () {
-                update()
-            });
-            update();
-        });
-        var legendSvg = d3.select("#legend");
-        var defs = legendSvg.append("defs");
-        var linearGradient = defs.append("linearGradient")
-            .attr("id", "linear-gradient");
-        linearGradient
-            .attr("x1", "0%")
-            .attr("y1", "0%")
-            .attr("x2", "0%")
-            .attr("y2", "100%");
-        linearGradient.append("stop")
-            .attr("offset", "0%")
-            .attr("stop-color", "#090");
-        linearGradient.append("stop")
-            .attr("offset", "100%")
-            .attr("stop-color", "#f00");
-        legendSvg.append("rect")
-            .attr("width", 30)
-            .attr("height", 300)
-            .style("fill", "url(#linear-gradient)");
-        var legendScale = d3.scaleLinear().domain(900, 1800).range([300, 0]);
-        var legendAxis = d3.axisRight(legendScale)
-            .tickValues(d3.range(900, 1800))
-            .tickFormat(d3.format("d"));
-        legendSvg.append("g")
-            .attr("class", "legend axis")
-            .attr("transform", "translate(50,0)")
-            .call(legendAxis)
-        console.log(legendSvg);
-    </script>
-    <svg width="100%" height="400px" viewbox="0 0 800 400" preserveaspectratio="xMidYMid"></svg>
+    <svg id="map" width="800px" height="1100px" viewbox="300 0 400 500"></svg>
     <div id="info">
         <div id="name"></div>
         <div id="birth_rate"></div>
         <div id="unit">( 個 嬰兒 / 1000 位女性 )</div>
     </div>
+    <svg id="legend" width="110px" height="350px" viewbox="0 0 110 350"></svg>
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.js" charset="utf-8"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script src="map.js"></script>
+    <script src="legend.js"></script>
+
 </body>
