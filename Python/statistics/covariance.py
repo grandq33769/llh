@@ -35,7 +35,7 @@ def correlation(xlist, ylist):
     if len(xlist) != len(ylist):
         raise ArithmeticError('Different lenght of two list.')
     else:
-        return covarience(xlist, ylist) / (np.std(xlist) * np.std(ylist))
+        return covarience(xlist, ylist) / np.sqrt(covarience(xlist, xlist) * covarience(ylist, ylist))
 
 
 if __name__ == '__main__':
@@ -45,6 +45,7 @@ if __name__ == '__main__':
     print('Average: A:{:.3f} B:{:.3f}'.format(np.average(A), np.average(B)))
 
     print('Covarience: {:.3f}'.format(covarience(A, B)))
+    # Note: numpy std divide N & numpy cov divide N-1
     print('Std: A:{:.3f} B:{:.3f}'.format(np.std(A), np.std(B)))
     print('Correlation coefficient: {:.3f}'.format(correlation(A, B)))
 
@@ -52,3 +53,4 @@ if __name__ == '__main__':
     STACK = np.vstack((A, B))
     print(STACK)
     print(np.cov(STACK))
+    print(np.corrcoef(STACK))
