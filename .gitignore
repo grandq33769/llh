@@ -6,4 +6,3 @@
 **/*.csv
 **/*.xlsx
 __pycache__/**
-**/word_embedding/**
