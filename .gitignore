@@ -5,4 +5,5 @@
 **/*.pickle
 **/*.csv
 **/*.xlsx
+**/*.txt
 __pycache__/**
