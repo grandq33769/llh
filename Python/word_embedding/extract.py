@@ -42,13 +42,14 @@ def process_article(article):
 
 if __name__ == '__main__':
     # Run all file for disable comment line
-    # for path in FLIST:
-    with open(FLIST[1], 'r') as file:
-        DATAS = json.load(file)
-        RESULTS = list()
-        for data in DATAS['articles']:
-            result = list(filter(None, process_article(data)))
-            RESULTS.extend(result)
+    RESULTS = list()
+    for path in FLIST:
+        print(path)
+        with open(path, 'r') as file:
+            DATAS = json.load(file)
+            for data in DATAS['articles']:
+                result = list(filter(None, process_article(data)))
+                RESULTS.extend(result)
 
     # Join wiki txt together
     with open('wiki_zh_tw.txt', 'a') as file:
