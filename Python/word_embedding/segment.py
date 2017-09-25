@@ -3,6 +3,8 @@
 import jieba
 import logging
 
+STOPWORD_EXCULDE = False
+
 
 def main():
 
@@ -26,7 +28,7 @@ def main():
             line = line.strip('\n')
             words = jieba.cut(line, cut_all=False)
             for word in words:
-                if word not in stopwordset:
+                if (STOPWORD_EXCULDE and word not in stopwordset) or not STOPWORD_EXCULDE:
                     output.write(word + ' ')
 
             texts_num += 1
