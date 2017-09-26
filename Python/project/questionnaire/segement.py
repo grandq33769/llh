@@ -2,8 +2,8 @@
 Cut the answer into word
 '''
 import jieba
-from llh.Python.project.input_data import word
-DICT_PATH = 'D://Code/llh/Python/project/jieba_dict/'
+from llh.Python.project.questionnaire.input_data import word
+DICT_PATH = 'D://Code/llh/Python/project/questionnaire/jieba_dict/'
 EXAMPLE = '88'
 
 

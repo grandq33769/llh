@@ -3,8 +3,8 @@ Convert all word to word2vec Vector
 '''
 
 from gensim import models
-from llh.Python.project import MPATH
-from llh.Python.project.segement import segement
+from llh.Python.project.questionnaire import MPATH
+from llh.Python.project.questionnaire.segement import segement
 
 
 def word2vec():

@@ -2,10 +2,10 @@
 Output the result of questionair
 '''
 import csv
-from llh.Python.project import CPATH
-from llh.Python.project.input_data import word_cluster
-from llh.Python.project.word_vector import word2vec
-from llh.Python.project.combine import combine
+from llh.Python.project.questionnaire import CPATH
+from llh.Python.project.questionnaire.input_data import word_cluster
+from llh.Python.project.questionnaire.word_vector import word2vec
+from llh.Python.project.questionnaire.combine import combine
 
 NUM_ATT = 5
 NOLIST = [str(n + 1) for n in range(222)]  # Data 序列 1 ~ 222

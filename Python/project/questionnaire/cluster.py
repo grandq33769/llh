@@ -6,8 +6,8 @@ import pickle
 import numpy as np
 from sklearn.cluster import KMeans
 from gensim import models
-from llh.Python.project import CPATH, MPATH
-from llh.Python.project.input_data import word_sim
+from llh.Python.project.questionnaire import CPATH, MPATH
+from llh.Python.project.questionnaire.input_data import word_sim
 
 
 def cluster(num_cluster):
