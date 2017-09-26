@@ -25,7 +25,8 @@ def write_cluster(num_cluster):
         templist.append(result.labels_[cno])
         outlist.append(templist)
 
-    with open(CPATH + '/Cluster_Index(' + str(num_cluster) + ').csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open(CPATH + '/Cluster_Index(' + str(num_cluster) + ').csv',
+              'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in outlist:
@@ -76,8 +77,7 @@ def write_word2vec():
     sdict, _ = word2vec()
     with open('校園友善問卷資料_文字_結果(Sim).csv', 'w', encoding='utf-8') as file:
         firstline = "ID,QNo,Word,"
-        numlist = [n + 1 for n in range(NUM_ATT)]
-        for num in numlist:
+        for num in [n + 1 for n in range(NUM_ATT)]:
             firstline += str(num) + ','
         firstline = firstline[:-1] + '\n'
         file.write(firstline)
