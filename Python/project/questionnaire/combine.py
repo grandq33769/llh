@@ -2,7 +2,7 @@
 Date: 2017/08/24
 Combine word cluster to raw data
 '''
-from llh.Python.project.input_data import raw_data, word_sim, word_cluster
+from llh.Python.project.questionnaire.input_data import raw_data, word_sim, word_cluster
 
 
 def combine(num_cluster):

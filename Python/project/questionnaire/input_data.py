@@ -5,7 +5,7 @@ Input word csv
 import csv
 import re
 import pickle
-from llh.Python.project import DPATH, PPATH
+from llh.Python.project.questionnaire import DPATH, PPATH
 
 RAW_PATH = DPATH + '/校園友善問卷資料(全).csv'
 WORD_PATH = DPATH + '/校園友善問卷資料_文字.csv'
@@ -48,7 +48,7 @@ def word_cluster(num_cluster):
     Import every word cluster in different number of cluster
     Return: wlist[word], result[KMeans]
     '''
-    from llh.Python.project.cluster import cluster
+    from llh.Python.project.questionnaire.cluster import cluster
     try:
         with open(PPATH + '/word_cluster(' + str(num_cluster) + ').pickle', 'rb') as variable:
             wlist, result = pickle.load(variable)
