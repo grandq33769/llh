@@ -8,22 +8,29 @@ import re
 from llh.Python.word_embedding import PTT_DATA_PATH
 
 
-def filter_chinese(sentense):
+def proc_chinese(article, combine=False):
     '''
-    Filter out all non-chinese character and return a string
+    Filter out all non-chinese character and split or combine all chinese sentence in article
     Input:str
-    Output:str
+    Output:list
     '''
+    r_list = list()
     try:
-        return ''.join(re.findall('[\u4e00-\u9fff]+', sentense))
+        if not combine:
+            # All sentence will split and append to list
+            r_list = re.findall('[\u4e00-\u9fff]+', article)
+        else:
+            # All sentence will combine in one sentence and append to list
+            r_list.append(''.join(re.findall('[\u4e00-\u9fff]+', article)))
+        return r_list
     except TypeError:
-        return ''
+        return r_list
 
 
-def process_article(json_file):
+def process_article(json_file, split=True):
     '''
     Convert and filter out content of article to a list
-    Input: file(.json)
+    Input: file(.json), Split all sentence or combine in one article
     Output: list()
     '''
     datas = json.load(json_file)
@@ -31,13 +38,13 @@ def process_article(json_file):
 
     for article in datas['articles']:
         try:
-            rlist.append(filter_chinese(article['article_title']))
-            rlist.append(filter_chinese(article['content']))
+            rlist.extend(proc_chinese(article['article_title'], not split))
+            rlist.extend(proc_chinese(article['content'], not split))
             for message in article['messages']:
-                rlist.append(filter_chinese(message['push_content']))
+                rlist.extend(proc_chinese(message['push_content'], not split))
         except KeyError:
             pass
-    return rlist
+    return list(filter(None, rlist))
 
 
 if __name__ == '__main__':
@@ -49,7 +56,7 @@ if __name__ == '__main__':
     for path in FLIST:
         print(path)
         with open(path, 'r') as file:
-            result = list(filter(None, process_article(file)))
+            result = process_article(file)
             RESULTS.extend(result)
 
     # Join wiki txt together
