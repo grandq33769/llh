@@ -15,7 +15,9 @@ class Word2vecConverter():
     def __init__(self, model_p):
         log.info('Start import Word2Vec model %s...',
                  model_p.split('/')[-1])
-        self.w2v = models.Word2Vec.load(model_p).wv
+        model = models.Word2Vec.load(model_p)
+        self.w2v = model.wv
+        self.vector_size = model.vector_size
         self.vocab = list(self.w2v.vocab.keys())
         log.info('Success import Word2Vec model %s...',
                  model_p.split('/')[-1])
@@ -30,10 +32,10 @@ class Word2vecConverter():
         for word in cut(sentence):
             cut_s.append(word)
             try:
-                r_list.append(self.word2vec(word))
+                r_list.append(self.word2vec(word).tolist())
             except KeyError:
                 log.warning('Missing word \'%s\' is dicovered...', word)
-                r_list.append(None)
+                r_list.append([0] * self.vector_size)
         return cut_s, r_list
 
     def sen_indexof(self, cut_sentence):
@@ -49,8 +51,13 @@ class Word2vecConverter():
     def indexof(self, word):
         '''
         Return an index of word in vocab list
+        If the word is not in w2v, -1 will return.
         '''
-        return self.vocab.index(word)
+        try:
+            index = self.vocab.index(word)
+        except ValueError:
+            index = -1
+        return index
 
     def word2vec(self, word):
         '''
@@ -67,3 +74,4 @@ if __name__ == '__main__':
     CUT, VEC = CONVERTER.sen_word2vec('我是男生')
     print(CUT)
     print(CONVERTER.sen_indexof(CUT))
+    print(CONVERTER.vector_size)
