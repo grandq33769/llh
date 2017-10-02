@@ -27,8 +27,10 @@ class PTT(data.Dataset):
     TRAIN = 'training.pt'
     TEST = 'test.pt'
 
-    def __init__(self, root, train=True, processed=False, transform=None, target_transform=None):
+    def __init__(self, root, converter, train=True, processed=False, transform=None, target_transform=None):
         self.root = os.path.expanduser(root)
+        # convert str to word2vec(llh.Python.word_embedding.word2vec.Word2vecConverter)
+        self.converter = converter
         self.train = train  # training set or test set
         self.processed = processed
         self.transform = transform
@@ -58,26 +60,26 @@ class PTT(data.Dataset):
         Args:
             index (int): Index
         Returns:
-            tuple: (sentense, target) Sentense may be exactly the word or word2vec
+            tuple: (sentence, target) Sentence may be exactly the word or word2vec
                     and target will be vocab list (1-n bag of word).
         """
         # TODO: If memory is insufficient,
         #       process of creating word2vec and vocab table should be delaied to training process.
         if self.train:
-            sentense = self.train_data[index]
+            sentence = self.train_data[index]
         else:
-            sentense = self.test_data[index]
+            sentence = self.test_data[index]
 
         if self.transform is not None:
-            sentense, emb = self.transform(sentense)
+            sentence, emb = self.transform(sentence)
 
         if self.target_transform is not None:
-            target = self.target_transform(sentense)
+            target = self.target_transform(sentence)
 
         else:
-            target = sentense
+            target = sentence
 
-        return sentense, emb, target
+        return sentence, emb, target
 
     def __len__(self):
         if self.train:
@@ -136,6 +138,30 @@ class PTT(data.Dataset):
             with open(os.path.join(self.proc_path, self.TEST), 'wb') as file:
                 torch.save(save_data, file)
         log.info('Done !')
+
+
+def read_json_file(json, converter):
+    '''
+    Reading a json file as article and cutting to sentence
+    Then convert to Float tensor as target data
+    Input : .json
+    Output : torch.FloatTensor
+    '''
+    article = process_article(json)
+    sentence_list = []
+    tensor_list = []
+    labels = []
+    for sentence in article:
+        cut, emb = converter.sen_word2vec(sentence)
+        tensor = torch.FloatTensor(emb)
+        sen_index = converter.sen_indexof(cut)
+
+        sentence_list.append(cut)
+        tensor_list.append(tensor)
+        labels.append(sen_index)
+
+        assert len(cut) == tensor.size(0) == len(sen_index)
+    return sentence_list, tensor_list, labels
 
 
 if __name__ == '__main__':
