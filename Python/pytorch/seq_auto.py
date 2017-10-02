@@ -2,15 +2,22 @@
 Module of Seq2seq autoencoder by using pytorch
 Date : 2017/9/29
 '''
+import sys
+import logging as log
 import torch
 from torch import nn
 from torch.autograd import Variable
+from torch.utils.data import DataLoader
+
+from llh.Python.word_embedding.word2vec import Word2vecConverter
+from ptt import PTT
 
 torch.manual_seed(1)
 
 # Hyper Parameters
 EPOCH = 1
 INPUT_SIZE = 400      # rnn input size
+BATCH_SIZE = 128
 LR = 0.003           # learning rate
 # TODO: Get Total Vocabulary Size (int)
 VOCAB_SIZE = 100
@@ -84,6 +91,19 @@ class RNNautoencoder(nn.Module):
 
 
 if __name__ == '__main__':
+    log.basicConfig(
+        format='%(asctime)s : %(levelname)s : %(message)s', level=log.INFO)
+    CONVERTER = Word2vecConverter(
+        '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin')
+    DATA = PTT(
+        '/Users/lhleung/Documents/Data/Ptt/Gossiping/', False, False, CONVERTER.sen_word2vec, CONVERTER.sen_indexof)
+
+    print(DATA.test_data.size())     # (60000, 28, 28)
+    train_loader = DataLoader(
+        dataset=DATA, batch_size=BATCH_SIZE, shuffle=True)
+
+    print(train_loader)
+    sys.exit()
     rnn_auto = RNNautoencoder(VOCAB_SIZE)
     print(rnn_auto)
 
