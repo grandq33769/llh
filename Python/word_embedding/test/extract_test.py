@@ -5,6 +5,7 @@ Date : 2017/10/02
 import unittest
 import re
 import llh.Python.word_embedding.extract as extract
+from llh.Python.word_embedding.word2vec import Word2vecConverter
 
 
 class TestDataProcessing(unittest.TestCase):
@@ -28,13 +29,36 @@ class TestDataProcessing(unittest.TestCase):
         周三到周五受泰利影響，全台各地將有強風豪雨， 周三、四則是影響最劇烈， 請民眾做好防颱準備； 預計周六起風雨趨緩。\
         （許敏溶台北報導） 蘋果新聞 https://goo.gl/VuXSmm 鬼島老闆:勞工只想著颱風假 一點都沒有競爭力'
 
+        self.converter = Word2vecConverter(
+            '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin')
+
     def tearDown(self):
         self.json.close()
 
     def test_read(self):
-        '''Test case for reading .json and extract the content'''
+        '''
+        Test case for reading .json and extract the content
+        '''
         result = extract.process_article(self.json)
         self.assertTrue(all([re.match('[\u4e00-\u9fff]+', x) for x in result]))
+
+    def test_converter(self):
+        '''
+        Test case for converter function
+        '''
+        # print(cut_s)
+        cut, s_vec = self.converter.sen2vec('我是男生')
+        print(cut, s_vec)
+        self.assertEqual(len(s_vec), 3)
+
+    def test_sen_index_vec(self):
+        '''
+        Test case for sen_index_vec() function
+        Test for: array shape
+        '''
+        cut, _ = self.converter.sen2vec('我是男生')
+        arr = self.converter.sen_index_vec(cut)
+        self.assertEqual(arr.shape, (3, 955583))
 
 
 if __name__ == '__main__':

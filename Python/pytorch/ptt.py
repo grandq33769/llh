@@ -27,10 +27,9 @@ class PTT(data.Dataset):
     TRAIN = 'training.pt'
     TEST = 'test.pt'
 
-    def __init__(self, root, converter, train=True, processed=False, transform=None, target_transform=None):
+    def __init__(self, root, train=True,
+                 processed=False, transform=None, target_transform=None):
         self.root = os.path.expanduser(root)
-        # convert str to word2vec(llh.Python.word_embedding.word2vec.Word2vecConverter)
-        self.converter = converter
         self.train = train  # training set or test set
         self.processed = processed
         self.transform = transform
@@ -60,11 +59,13 @@ class PTT(data.Dataset):
         Args:
             index (int): Index
         Returns:
-            tuple: (sentence, target) Sentence may be exactly the word or word2vec
-                    and target will be vocab list (1-n bag of word).
+            sentence(list): A list of word from sliced sentence or whole sentence
+            emb(np.array): Array of word2vec which concatense from each word correspoding to sentence
+            target(list/np.array/string):  Index list of word from sliced sentence/
+                                           Array of each word(1-n bag of words)/
+                                           Whole sentence
         """
-        # TODO: If memory is insufficient,
-        #       process of creating word2vec and vocab table should be delaied to training process.
+        emb = None
         if self.train:
             sentence = self.train_data[index]
         else:
@@ -75,11 +76,13 @@ class PTT(data.Dataset):
 
         if self.target_transform is not None:
             target = self.target_transform(sentence)
-
         else:
             target = sentence
 
-        return sentence, emb, target
+        if emb is not None:
+            return sentence, emb, target
+        else:
+            return sentence, target
 
     def __len__(self):
         if self.train:
@@ -128,7 +131,8 @@ class PTT(data.Dataset):
         for json_n in (file for file in os.listdir(self.raw_path) if file.endswith('.json')):
             with open(os.path.join(self.raw_path, json_n), 'r') as json:
                 log.info('Processing %s ...', json_n)
-                save_data.extend(process_article(json))
+                sentences = process_article(json)
+                save_data.extend(sentences)
 
         log.info('Saving ...')
         if self.train:
@@ -140,36 +144,18 @@ class PTT(data.Dataset):
         log.info('Done !')
 
 
-def read_json_file(json, converter):
-    '''
-    Reading a json file as article and cutting to sentence
-    Then convert to Float tensor as target data
-    Input : .json
-    Output : torch.FloatTensor
-    '''
-    article = process_article(json)
-    sentence_list = []
-    tensor_list = []
-    labels = []
-    for sentence in article:
-        cut, emb = converter.sen_word2vec(sentence)
-        tensor = torch.FloatTensor(emb)
-        sen_index = converter.sen_indexof(cut)
-
-        sentence_list.append(cut)
-        tensor_list.append(tensor)
-        labels.append(sen_index)
-
-        assert len(cut) == tensor.size(0) == len(sen_index)
-    return sentence_list, tensor_list, labels
-
-
 if __name__ == '__main__':
     from llh.Python.word_embedding.word2vec import Word2vecConverter
     log.basicConfig(
         format='%(asctime)s : %(levelname)s : %(message)s', level=log.INFO)
     CONVERTER = Word2vecConverter(
-        '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin')
+        '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin'
+    )
     TEST_DATA = PTT(
-        '/Users/lhleung/Documents/Data/Ptt/Gossiping/', False, False, CONVERTER.sen_word2vec, CONVERTER.sen_indexof)
+        '/Users/lhleung/Documents/Data/Ptt/Gossiping/',
+        False,
+        False,
+        CONVERTER.sen2vec,
+        CONVERTER.sen_indexof
+    )
     print(TEST_DATA)
