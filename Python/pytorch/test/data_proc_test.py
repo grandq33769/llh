@@ -23,7 +23,9 @@ class TestDataProcessing(unittest.TestCase):
         self.json.close()
 
     def test_read(self):
-        '''Test case for reading .json and extract the content'''
+        '''
+        Test case for reading .json and extract the content
+        '''
         sen, emb, labels = ptt.read_json_file(self.json, self.converter)
         self.assertEqual(len(sen), emb.size(0))
         self.assertEqual(emb.size(0), len(labels))
