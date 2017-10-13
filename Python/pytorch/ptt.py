@@ -60,12 +60,12 @@ class PTT(data.Dataset):
             index (int): Index
         Returns:
             sentence(list): A list of word from sliced sentence or whole sentence
-            emb(np.array): Array of word2vec which concatense from each word correspoding to sentence
+            emb(np.array): Array of word2vec which concatense
+                           from each word correspoding to sentence
             target(list/np.array/string):  Index list of word from sliced sentence/
                                            Array of each word(1-n bag of words)/
                                            Whole sentence
         """
-        emb = None
         if self.train:
             sentence = self.train_data[index]
         else:
@@ -75,14 +75,11 @@ class PTT(data.Dataset):
             sentence, emb = self.transform(sentence)
 
         if self.target_transform is not None:
-            target = self.target_transform(sentence)
+            target = torch.FloatTensor(self.target_transform(sentence))
         else:
-            target = sentence
+            target = torch.FloatTensor(emb)
 
-        if emb is not None:
-            return sentence, emb, target
-        else:
-            return sentence, target
+        return sentence, target
 
     def __len__(self):
         if self.train:
@@ -112,6 +109,7 @@ class PTT(data.Dataset):
         The function to convert PTT data in type of .json to .pt
         '''
         if self._check_exists():
+            log.info('Pytorch file already exist. Please switch off processed arg')
             return
 
         log.info('Processing...')
@@ -142,20 +140,3 @@ class PTT(data.Dataset):
             with open(os.path.join(self.proc_path, self.TEST), 'wb') as file:
                 torch.save(save_data, file)
         log.info('Done !')
-
-
-if __name__ == '__main__':
-    from llh.Python.word_embedding.word2vec import Word2vecConverter
-    log.basicConfig(
-        format='%(asctime)s : %(levelname)s : %(message)s', level=log.INFO)
-    CONVERTER = Word2vecConverter(
-        '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin'
-    )
-    TEST_DATA = PTT(
-        '/Users/lhleung/Documents/Data/Ptt/Gossiping/',
-        False,
-        False,
-        CONVERTER.sen2vec,
-        CONVERTER.sen_indexof
-    )
-    print(TEST_DATA)
