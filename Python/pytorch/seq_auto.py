@@ -96,9 +96,9 @@ if __name__ == '__main__':
     CONVERTER = Word2vecConverter(
         '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin')
     DATA = PTT(
-        '/Users/lhleung/Documents/Data/Ptt/Gossiping/', False, False, CONVERTER.sen_word2vec, CONVERTER.sen_indexof)
+        '/Users/lhleung/Documents/Data/Ptt/Gossiping/', True, False, CONVERTER.sen2vec)
 
-    print(DATA.test_data.size())     # (60000, 28, 28)
+    print(len(DATA.train_data))
     train_loader = DataLoader(
         dataset=DATA, batch_size=BATCH_SIZE, shuffle=True)
 

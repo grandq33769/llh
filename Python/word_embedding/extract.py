@@ -11,8 +11,11 @@ from llh.Python.word_embedding import PTT_DATA_PATH
 def proc_chinese(article, combine=False):
     '''
     Filter out all non-chinese character and split or combine all chinese sentence in article
-    Input:str
-    Output:list
+    Args:
+            article(string): Chinese article
+            combine(boolean): Determine the return list contain vocabs or sentence
+    Returns:
+            r_list(list): Return list contain filtered article in form of vocabs or setence
     '''
     r_list = list()
     try:
@@ -30,8 +33,10 @@ def proc_chinese(article, combine=False):
 def process_article(json_file, split=True):
     '''
     Convert and filter out content of article to a list
-    Input: file(.json), Split all sentence or combine in one article
-    Output: list()
+    Args:
+            json_file(.json): Inputed json file
+    Returns:
+            (list): list contains all article in .json file
     '''
     datas = json.load(json_file)
     rlist = list()

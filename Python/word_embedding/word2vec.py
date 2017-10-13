@@ -34,9 +34,12 @@ class Word2vecConverter():
         '''
         cut_sentence = list(cut(sentence))
         vec = np.expand_dims(self.word2vec(cut_sentence[0]), axis=0)
-        for word in cut_sentence[1:]:
-            word_vec = np.expand_dims(self.word2vec(word), axis=0)
-            vec = np.concatenate((vec, word_vec))
+        try:
+            for word in cut_sentence[1:]:
+                word_vec = np.expand_dims(self.word2vec(word), axis=0)
+                vec = np.concatenate((vec, word_vec))
+        except IndexError:
+            return cut_sentence, vec
         return cut_sentence, vec
 
     def sen_indexof(self, cut_sentence):
