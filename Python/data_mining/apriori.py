@@ -20,14 +20,13 @@ class Model(ABC):
         self.data = data
         self.min_sup = min_sup
         self.org = self.initial()
+        self.result = list()
 
     def run(self):
         '''
         Returns:
             fqits(list(frozenset)): List of frozen set containing the Frequent Itemset
         '''
-        self.result = list()
-
         comb = self.org
         while not self.isfinish(comb):
             counts = self.count(comb)
