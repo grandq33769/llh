@@ -4,6 +4,7 @@ Date : 2017/10/23
 '''
 from collections import namedtuple
 from itertools import tee
+import logging as log
 import numpy as np
 import pandas as pd
 from llh.Python.data import BASE_PATH
@@ -45,6 +46,7 @@ def open_data(standardize, projection=True, attr_n=True):
             tli.append('NaN')
         tli.extend(tup['type':'members'])
         rli.append(tli)
+    log.info('Anime data open successful ... Data lenght: %d', len(rli))
     return rli
 
 
