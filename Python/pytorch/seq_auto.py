@@ -96,14 +96,13 @@ if __name__ == '__main__':
     CONVERTER = Word2vecConverter(
         '/Users/lhleung/Documents/Data/Word2vec/400_include_stopword/med400.model.bin')
     DATA = PTT(
-        '/Users/lhleung/Documents/Data/Ptt/Gossiping/', True, False, CONVERTER.sen2vec)
+        '/Users/lhleung/Documents/Data/Ptt/Gossiping/', False, True, CONVERTER.sen2vec)
 
-    print(len(DATA.train_data))
+    print(len(DATA.test_data))
     train_loader = DataLoader(
         dataset=DATA, batch_size=BATCH_SIZE, shuffle=True)
 
     print(train_loader)
-    sys.exit()
     rnn_auto = RNNautoencoder(VOCAB_SIZE)
     print(rnn_auto)
 
