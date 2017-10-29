@@ -119,11 +119,14 @@ class Node(object):
         Returns:
             Node: the root of node
         '''
+        root = None
         if self.level is 1:
-            return self
+            root = self
 
         else:
-            return self.parent.get_root()
+            root = self.parent.get_root()
+
+        return root
 
     def find(self, value):
         '''
