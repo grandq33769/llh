@@ -182,10 +182,11 @@ if __name__ == '__main__':
     n3.add(n4)
 
     c_n2 = n2.copy()
-    node = Node(3, n, c_n2)
+    new_node = Node(3, n, c_n2)
+
     result = list(map(lambda x: x.level, n.find(3.4)))
     print(result)
     print(n.all())
 
-    c_n = n1.copy(True)
+    c_n = n1 .copy(True)
     print(c_n.all())
