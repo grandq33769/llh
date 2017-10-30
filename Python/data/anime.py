@@ -23,7 +23,7 @@ def open_data(standardize, projection=True, attr_n=True):
         projection(boolean): True for project to LEVELS string
         attr_n(boolean): True for adding attribute name in value
     Returns:
-        rli(dict): Return list include transaction list ()
+        rli(tuple): Return tuple include all transaction tuple
     '''
     dfm = pd.read_csv(DATA_PATH, header=0)
     dfm = dfm.loc[:, 'genre':'members']
@@ -45,9 +45,9 @@ def open_data(standardize, projection=True, attr_n=True):
         except AttributeError:
             tli.append('NaN')
         tli.extend(tup['type':'members'])
-        rli.append(tli)
+        rli.append(tuple(tli))
     log.info('Anime data open successful ... Data lenght: %d', len(rli))
-    return rli
+    return tuple(rli)
 
 
 def rescale(values):
