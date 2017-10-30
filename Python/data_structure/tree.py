@@ -17,10 +17,10 @@ class Node(object):
             parent(Node): Parent node for linking with self node
             child(list(Node)): Child node for being self node child
         '''
-        self.level = 1
+        self.level = 0
         self.value = value
         self.parent = None
-        self.childs = []
+        self.childs = set()
 
         if parent is not None:
             assert isinstance(parent, Node)
@@ -52,7 +52,7 @@ class Node(object):
         assert isinstance(child, Node)
         child.add_level(self.level)
         child.parent = self
-        self.childs.append(child)
+        self.childs.add(child)
 
     def add_level(self, level):
         '''
@@ -120,7 +120,7 @@ class Node(object):
             Node: the root of node
         '''
         root = None
-        if self.level is 1:
+        if self.level is 0:
             root = self
 
         else:
@@ -128,15 +128,43 @@ class Node(object):
 
         return root
 
+    def get(self, value):
+        '''
+        Args:
+            value(object): Value that desire to be found in 'child' only
+        Returns:
+            node: Node containing the input value
+        '''
+        for chil in self.childs:
+            if chil.equal(value):
+                return chil
+
+        return None
+
+    def equal(self, value):
+        '''
+        Default equal() for determine value is it equal to node
+        Args:
+            value(object): Value that desire to be determined
+        Returns:
+            True: Value is equal to Node which mean value can represent this node
+            False: Value is not equal to Node which mean value can not represent this node
+        '''
+        equal = False
+        if isinstance(value, type(self.value)):
+            if self.value is value:
+                equal = True
+        return equal
+
     def find(self, value):
         '''
         Args:
-            Value(object): Value that desire to be found in all node (self & child)
+            value(object): Value that desire to be found in all node(self & child)
         Returns:
             r_list(list(Node)): List of nodes contain the value
         '''
         r_list = list()
-        if self.value is value:
+        if self.equal(value):
             r_list.append(self)
 
         for child in self.childs:
@@ -193,3 +221,7 @@ if __name__ == '__main__':
 
     c_n = n1 .copy(True)
     print(c_n.all())
+
+    s = set()
+    s.add(n)
+    print(s)
