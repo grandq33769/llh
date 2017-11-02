@@ -2,6 +2,7 @@
 Module for impletement Tree data structure
 Date : 29/10/2017
 '''
+import sys
 
 
 class Node(object):
@@ -36,8 +37,8 @@ class Node(object):
             child(Node/list(Node)): Node for being added as child
                                     list of Node to being added as child
         '''
-        root = self.get_root()
-        assert root.exist(child) is False
+        # root = self.get_root()
+        # assert root.exist(child) is False
         if isinstance(child, list):
             for chil in child:
                 self._add(chil)
@@ -49,7 +50,7 @@ class Node(object):
         Args:
             child(Node): Node to be added as child
         '''
-        assert isinstance(child, Node)
+        # assert isinstance(child, Node)
         child.add_level(self.level)
         child.parent = self
         self.childs.add(child)
@@ -152,7 +153,7 @@ class Node(object):
         '''
         equal = False
         if isinstance(value, type(self.value)):
-            if self.value is value:
+            if self.value == value:
                 equal = True
         return equal
 
@@ -179,12 +180,23 @@ class Node(object):
         Returns:
             new(Node): Returned node copy from calling node
         '''
-        new = Node(self.value)
+        n_type = type(self)
+        new = n_type(self._copy(self.value))
         if child:
             for chil in self.childs:
                 new.add(chil.copy(child))
 
         return new
+
+    @classmethod
+    def _copy(cls, value):
+        '''
+        Args:
+            value(object): Value to be copied
+        Returns:
+            new(type(value)): A 'deep' copy of value
+        '''
+        return value
 
     def __str__(self):
         '''

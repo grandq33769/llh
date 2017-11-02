@@ -50,7 +50,6 @@ class FrequentItemSet(ABC):
                  len(r_set))
         return r_set
 
-    @abstractmethod
     def isfinish(self, comb):
         '''
         Args:
@@ -59,9 +58,8 @@ class FrequentItemSet(ABC):
             True: finished of algorithm, combination in comb have be counted
             False: unfininsh, combination in comb have not be counted
         '''
-        pass
+        return not bool(comb)
 
-    @abstractmethod
     def count(self, combs):
         '''
         Args:
@@ -70,9 +68,14 @@ class FrequentItemSet(ABC):
             r_dict({frozenset:int}):
             Dictionary containing combination of Frozenset as key and its counts as value
         '''
-        pass
+        r_dict = dict()
+        for com in combs:
+            for trans in self.data:
+                update_comb(r_dict, trans, com)
+        log.info('Counting Finish ... Number of combination counts: %d',
+                 len(r_dict))
+        return r_dict
 
-    @abstractmethod
     def purn(self, counts):
         '''
         Args:
@@ -80,17 +83,11 @@ class FrequentItemSet(ABC):
         Returns:
             r_dict({frozenset:int}): Dictionary of remaining dict {frozenset,int} that above min_sup
         '''
-        pass
-
-    @abstractmethod
-    def recombine(self, purned):
-        '''
-        Args:
-            purned({frozenset,counts}): Purned set that to be form new combination
-        Retruns:
-            r_set({frozenset}): New combination set of frozenset to be counted next iteration
-        '''
-        pass
+        cond = len(self.data) * self.min_sup
+        r_dict = {key: value for key, value in counts.items() if value > cond}
+        log.info('Purning Finish ... Number of remaing combination: %d',
+                 len(r_dict))
+        return r_dict
 
 
 def transform(items):
@@ -102,3 +99,22 @@ def transform(items):
         r_set((frozenset)): Set of frozenset of item
     '''
     return set(frozenset({element}) for element in items)
+
+
+def update_comb(results, trans, itemset):
+    '''
+    Update the result dictionary
+    by determinating the presence of itemset in transaction
+    Args:
+        results({frozenset:int}):
+        Dictionary of results each tuple containing itemset as key and count as value
+        trans(list): List of items in a transaction
+        itemset(frozenset): Item set to be counted
+    '''
+    tset = set(trans)
+    if not itemset.issubset(tset):
+        return
+    try:
+        results[itemset] += 1
+    except KeyError:
+        results.update({itemset: 1})
