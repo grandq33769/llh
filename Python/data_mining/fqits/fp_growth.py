@@ -9,7 +9,7 @@ from collections import Counter
 from llh.Python.data_structure.tree import Node
 from llh.Python.data_mining.fqits.base import FrequentItemSet, transform
 
-NUM = 10
+NUM = 12000
 
 
 class FPgrowth(FrequentItemSet):
@@ -27,7 +27,7 @@ class FPgrowth(FrequentItemSet):
         for trans in self.data:
             self.fpt.add(trans)
             num += 1
-            if num % 100 == 0:
+            if num % 1000 == 0:
                 log.info('Finish Processing %d of transactions ....', num)
         log.info('Finish Building FPTree....')
 
@@ -42,10 +42,10 @@ class FPgrowth(FrequentItemSet):
             condition(set): Set of condition to grow tree
         '''
         log.info('Growing for condition %s Begin ...', str(condition))
-        purned = self.purn(tree.cand)
+        pruned = self.prune(tree.cand)
 
-        if not self.isfinish(set(purned.keys())):
-            for item in sorted(tuple(purned.keys()), key=lambda x: purned[x]):
+        if not self.isfinish(set(pruned.keys())):
+            for item in sorted(tuple(pruned.keys()), key=lambda x: pruned[x]):
                 new_tree, count = tree.extract(item)
                 target = set(item)
                 if condition:
