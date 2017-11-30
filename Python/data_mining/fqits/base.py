@@ -76,16 +76,16 @@ class FrequentItemSet(ABC):
                  len(r_dict))
         return r_dict
 
-    def purn(self, counts):
+    def prune(self, counts):
         '''
         Args:
-            counts({frozenset:int}): Dictionary will be purned by self.min_sup
+            counts({frozenset:int}): Dictionary will be pruned by self.min_sup
         Returns:
             r_dict({frozenset:int}): Dictionary of remaining dict {frozenset,int} that above min_sup
         '''
         cond = len(self.data) * self.min_sup
         r_dict = {key: value for key, value in counts.items() if value > cond}
-        log.info('Purning Finish ... Number of remaing combination: %d',
+        log.info('pruning Finish ... Number of remaing combination: %d',
                  len(r_dict))
         return r_dict
 

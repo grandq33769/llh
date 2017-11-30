@@ -7,7 +7,7 @@ from itertools import combinations
 
 from llh.Python.data_mining.fqits.base import FrequentItemSet, transform
 
-NUM = 10
+NUM = 12000
 
 
 class Apriori(FrequentItemSet):
@@ -24,23 +24,23 @@ class Apriori(FrequentItemSet):
         while not self.isfinish(comb):
             log.info('Round %d Begin ...', len(next(iter(comb))))
             counts = self.count(comb)
-            purned = self.purn(counts)
-            self.result.update(purned)
-            comb = self.recombine(purned)
+            pruned = self.prune(counts)
+            self.result.update(pruned)
+            comb = self.recombine(pruned)
 
         return self.result
 
-    def recombine(self, purned):
+    def recombine(self, pruned):
         '''
         Args:
-            purned({frozenset,counts}): Purned set that to be form new combination
+            pruned({frozenset,counts}): pruned set that to be form new combination
         Retruns:
             r_set({frozenset}): New combination set of frozenset to be counted next iteration
         '''
-        if not purned:
+        if not pruned:
             return {}
-        tlen = len(next(iter(purned))) + 1
-        prev = set(purned.keys())
+        tlen = len(next(iter(pruned))) + 1
+        prev = set(pruned.keys())
         cset = set()
 
         log.info('Finish Lenght %d Round ... Recombination begin ...', tlen - 1)
