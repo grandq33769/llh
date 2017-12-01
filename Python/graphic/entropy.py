@@ -9,7 +9,6 @@ FIG = plt.figure()
 
 PROB = np.linspace(0, 1, 100)
 OUTPUT = -PROB * np.log2(PROB) - (1 - PROB) * np.log(1 - PROB)
-print(OUTPUT)
 
 plt.plot(PROB, OUTPUT)
 plt.xlabel("Probability")
