@@ -24,10 +24,11 @@ import pandas as pd
 from sklearn import tree
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import precision_score, recall_score, f1_score
 import graphviz
+import numpy as np
 
 PATH = '~/Documents/Data/mushrooms.csv'
-
 
 def open_mushroom(prop):
 	'''
@@ -36,8 +37,8 @@ def open_mushroom(prop):
             num_a(int): Number of attributes used to return
     Returns:
             tr_x(Dataframe): Training input data dictionery
-                        tr_y(list): Training target output
-                        te_x(Dataframe): Testing input data dictionery
+            tr_y(list): Training target output
+            te_x(Dataframe): Testing input data dictionery
             te_y(list): Testing target output
     '''
 	mdf = pd.read_csv(PATH, header=0)
@@ -63,17 +64,17 @@ def golden_classify(mushroom):
             type(char): e for edible, p for poisonious
     '''
 	if mushroom['cap-surface'] == 'f' or mushroom['cap-surface'] == 'y':
-		return 'p: Rule 1'
+		return 'p'
 	elif mushroom['cap-shape'] == 'x':
-		return 'p: Rule 2'
+		return 'p'
 	elif mushroom['stalk-root'] == 'b' or mushroom['stalk-root'] == 'u':
-		return 'p: Rule 3'
+		return 'p'
 	elif mushroom['spore-print-color'] == 'w':
-		return 'p: Rule 4'
+		return 'p'
 	elif mushroom['ring-number'] == 'o' or mushroom['ring-number'] == 't':
-		return 'p: Rule 5'
+		return 'p'
 	elif mmushroom['gill-size'] == 'n' or ushroom['gill-color'] == 'w':
-		return 'p: Rule 6'
+		return 'p'
 	else:
 		return 'e'
 
@@ -86,15 +87,14 @@ def train(inputs, target):
 	Returns:
 			tree(sklearn.tree.DecisionTreeClassifier()): 
 				Decision tree trained by arguments
-			fn(list): Features names
-			cn(list): Classes names
+			vect(DictVectorizer): DictVectorizer fit by feature 
+			le(LabelEncoder): LabelEncoder fit by target class
 	'''
 	#Input Vectorization
 	x_dict = inputs.T.to_dict().values()
 	vect = DictVectorizer()
 	x = vect.fit_transform(x_dict)
-	fn = vect.get_feature_names()
-	print('Number of attribute:' + str(len(fn)))
+	print('Number of attribute:' + str(len(vect.get_feature_names())))
 
 	#Label Encode
 	le = LabelEncoder()
@@ -106,7 +106,7 @@ def train(inputs, target):
 	clf = tree.DecisionTreeClassifier()
 	clf = clf.fit(x, y)
 
-	return clf, fn, le.classes_
+	return clf, vect, le
 
 
 def show(clf, fn, cn):
@@ -131,17 +131,45 @@ def show(clf, fn, cn):
 	graph.render('mushroom')
 
 
+def evaluate(true, test):
+	'''
+	Args:
+			true(list): True labels
+			test(list): Test labels predicted by classifier
+	Output:
+			precision(float): Macro precision score(TP/TP+FP)
+			recall(float): Macro recall score(TP/TP+FN)
+			f1_score(float): Macro F1 score
+			(2*((precision*recall)/(precision+recall))
+	'''
+	precision = precision_score(true, test, average='macro')
+	recall = recall_score(true, test, average='macro')
+	f1s = f1_score(true, test, average='macro')
+	print('Precision: ', precision)
+	print('Recall: ', recall)
+	print('Macro F1 Score: ', f1s)
+
+	return precision, recall, f1s
+
+
 if __name__ == '__main__':
 	TR_X, TR_Y, TE_X, TE_Y = open_mushroom(0.7)
 
 	#golden_rule
-	'''
 	g_result = list()
-	for inx, tup in TR_X.iterrows():
+	for inx, tup in TE_X.iterrows():
 		y = golden_classify(tup)
 		g_result.append(y)
-	'''
 
 	#Build Decision Tree
-	dt, fn, cn = train(TR_X, TR_Y)
-	show(dt, fn, cn)
+	dt, dv, le = train(TR_X, TR_Y)
+	#show(dt, dv.get_feature_names(), le.classes_)
+
+	#Testing
+	test = dv.transform(TE_X.T.to_dict().values())
+	result = dt.predict(test)
+	result_labels = le.inverse_transform(result)
+
+	#Evaluation
+	evaluate(TE_Y, result_labels)
+	evaluate(TE_Y, g_result)
