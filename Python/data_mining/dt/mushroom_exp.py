@@ -22,6 +22,7 @@ Data Attribute:
 import sys
 import pandas as pd
 from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import precision_score, recall_score, f1_score
@@ -29,6 +30,15 @@ import graphviz
 import numpy as np
 
 PATH = '~/Documents/Data/mushrooms.csv'
+CON_DICT = {
+				'cap-surface': ['f', 'y'],
+				'cap-shape': ['x'],
+				'stalk-root': ['b', 'u'],
+				'spore-print-color': ['w'],
+				'ring-number': ['o', 'r'],
+				'gill-size': ['n', 'w']
+}
+
 
 def open_mushroom(prop):
 	'''
@@ -63,30 +73,23 @@ def golden_classify(mushroom):
     Returns:
             type(char): e for edible, p for poisonious
     '''
-	if mushroom['cap-surface'] == 'f' or mushroom['cap-surface'] == 'y':
-		return 'p'
-	elif mushroom['cap-shape'] == 'x':
-		return 'p'
-	elif mushroom['stalk-root'] == 'b' or mushroom['stalk-root'] == 'u':
-		return 'p'
-	elif mushroom['spore-print-color'] == 'w':
-		return 'p'
-	elif mushroom['ring-number'] == 'o' or mushroom['ring-number'] == 't':
-		return 'p'
-	elif mmushroom['gill-size'] == 'n' or ushroom['gill-color'] == 'w':
-		return 'p'
-	else:
-		return 'e'
+	for k, v in CON_DICT.items():
+		for ans in v:
+			try:
+				if mushroom[k] == ans:
+					return 'p'
+			except:
+				continue
+
+	return 'e'
 
 
-def train(inputs, target):
+def vectorize(inputs, target):
 	'''
 	Args:
 			inputs(pandas.Dataframe): Mushroom input data
 			target(list): Target output class
 	Returns:
-			tree(sklearn.tree.DecisionTreeClassifier()): 
-				Decision tree trained by arguments
 			vect(DictVectorizer): DictVectorizer fit by feature 
 			le(LabelEncoder): LabelEncoder fit by target class
 	'''
@@ -94,7 +97,7 @@ def train(inputs, target):
 	x_dict = inputs.T.to_dict().values()
 	vect = DictVectorizer()
 	x = vect.fit_transform(x_dict)
-	print('Number of attribute:' + str(len(vect.get_feature_names())))
+	print('\nNumber of attribute:' + str(len(vect.get_feature_names())))
 
 	#Label Encode
 	le = LabelEncoder()
@@ -102,14 +105,10 @@ def train(inputs, target):
 	print('Lenght of data:' + str(len(y)))
 	print('Target Domain:' + str(le.classes_))
 
-	#Build model
-	clf = tree.DecisionTreeClassifier()
-	clf = clf.fit(x, y)
-
-	return clf, vect, le
+	return vect, le
 
 
-def show(clf, fn, cn):
+def show(name, clf, fn, cn):
 	'''
 	Args:
 			clf(sklearn.tree.DecisionTreeClassifier):
@@ -128,7 +127,7 @@ def show(clf, fn, cn):
 					rounded=True,
 					special_characters=True)
 	graph = graphviz.Source(dot_data)
-	graph.render('mushroom')
+	graph.render(name)
 
 
 def evaluate(true, test):
@@ -154,22 +153,52 @@ def evaluate(true, test):
 
 if __name__ == '__main__':
 	TR_X, TR_Y, TE_X, TE_Y = open_mushroom(0.7)
+	attr = TR_X.columns.values
+	filter_tr_x = TR_X
+	filter_te_x = TE_X
 
-	#golden_rule
-	g_result = list()
-	for inx, tup in TE_X.iterrows():
-		y = golden_classify(tup)
-		g_result.append(y)
+	for attr in CON_DICT:
+		#Drop 1 attribute each time
+		filter_tr_x = filter_tr_x.drop([attr], axis=1)
+		filter_te_x = filter_te_x.drop([attr], axis=1)
 
-	#Build Decision Tree
-	dt, dv, le = train(TR_X, TR_Y)
-	#show(dt, dv.get_feature_names(), le.classes_)
+		#Testing golden_rule
+		g_result = list()
+		for _, tup in filter_te_x.iterrows():
+			y = golden_classify(tup)
+			g_result.append(y)
 
-	#Testing
-	test = dv.transform(TE_X.T.to_dict().values())
-	result = dt.predict(test)
-	result_labels = le.inverse_transform(result)
+		#Pre-process
+		dv, le = vectorize(filter_tr_x, TR_Y)
+		tr_x = dv.transform(filter_tr_x.T.to_dict().values())
+		tr_y = le.transform(TR_Y)
+		te_x = dv.transform(filter_te_x.T.to_dict().values())
+		str_num = str(len(filter_tr_x.columns.values))
 
-	#Evaluation
-	evaluate(TE_Y, result_labels)
-	evaluate(TE_Y, g_result)
+		#Build decision tree
+		dt = tree.DecisionTreeClassifier()
+		dt = dt.fit(tr_x, tr_y)
+		filename = 'Decision Tree_' + str_num
+		show(filename, dt, dv.get_feature_names(), le.classes_)
+
+		#Testing decision tree
+		dt_result = dt.predict(te_x)
+		dt_result_labels = le.inverse_transform(dt_result)
+
+		#Build random forest
+		rf = RandomForestClassifier()
+		rf = dt.fit(tr_x, tr_y)
+		filename = 'Random Forest_' + str_num
+		show(filename, rf, dv.get_feature_names(), le.classes_)
+
+		#Testing random forest
+		rf_result = rf.predict(te_x)
+		rf_result_labels = le.inverse_transform(rf_result)
+
+		#Evaluation
+		print('\n Golden Classifier Result-' + str_num)
+		evaluate(TE_Y, g_result)
+		print('\n Decision Tree Result-' + str_num)
+		evaluate(TE_Y, dt_result_labels)
+		print('\n Random Forest Result-' + str_num)
+		evaluate(TE_Y, rf_result_labels)
