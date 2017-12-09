@@ -151,7 +151,59 @@ def evaluate(true, test):
 	return precision, recall, f1s
 
 
+def run_exp(tr_x, tr_y, te_x, te_y):
+	'''
+	Args:
+		tr_x(DataFrame): Trainig input dataframe
+		tr_y(list): Training target data
+		te_x(DataFrame): Testing input dataframe
+		te_y(list): Testing target data
+	'''
+	#Testing golden_rule
+	g_result = list()
+	for _, tup in te_x.iterrows():
+		y = golden_classify(tup)
+		g_result.append(y)
+
+	#Pre-process
+	dv, le = vectorize(tr_x, tr_y)
+	str_num = str(len(tr_x.columns.values))
+	str_size = str(len(tr_x))
+	tr_x = dv.transform(tr_x.T.to_dict().values())
+	tr_y = le.transform(tr_y)
+	te_x = dv.transform(te_x.T.to_dict().values())
+
+	#Build decision tree
+	dt = tree.DecisionTreeClassifier()
+	dt = dt.fit(tr_x, tr_y)
+	filename = 'Decision Tree_' + str_num + '-' + str_size
+	show(filename, dt, dv.get_feature_names(), le.classes_)
+
+	#Testing decision tree
+	dt_result = dt.predict(te_x)
+	dt_result_labels = le.inverse_transform(dt_result)
+
+	#Build random forest
+	rf = RandomForestClassifier()
+	rf = dt.fit(tr_x, tr_y)
+	filename = 'Random Forest_' + str_num + '-' + str_size
+	show(filename, rf, dv.get_feature_names(), le.classes_)
+
+	#Testing random forest
+	rf_result = rf.predict(te_x)
+	rf_result_labels = le.inverse_transform(rf_result)
+
+	#Evaluation
+	print('\n Golden Classifier Result-' + str_num + '-' + str_size)
+	evaluate(te_y, g_result)
+	print('\n Decision Tree Result-' + str_num + '-' + str_size)
+	evaluate(te_y, dt_result_labels)
+	print('\n Random Forest Result-' + str_num + '-' + str_size)
+	evaluate(te_y, rf_result_labels)
+
+
 if __name__ == '__main__':
+	#Drop attribute experiment
 	TR_X, TR_Y, TE_X, TE_Y = open_mushroom(0.7)
 	attr = TR_X.columns.values
 	filter_tr_x = TR_X
@@ -162,43 +214,9 @@ if __name__ == '__main__':
 		filter_tr_x = filter_tr_x.drop([attr], axis=1)
 		filter_te_x = filter_te_x.drop([attr], axis=1)
 
-		#Testing golden_rule
-		g_result = list()
-		for _, tup in filter_te_x.iterrows():
-			y = golden_classify(tup)
-			g_result.append(y)
+		run_exp(filter_tr_x, TR_Y, filter_te_x,TE_Y)	
 
-		#Pre-process
-		dv, le = vectorize(filter_tr_x, TR_Y)
-		tr_x = dv.transform(filter_tr_x.T.to_dict().values())
-		tr_y = le.transform(TR_Y)
-		te_x = dv.transform(filter_te_x.T.to_dict().values())
-		str_num = str(len(filter_tr_x.columns.values))
-
-		#Build decision tree
-		dt = tree.DecisionTreeClassifier()
-		dt = dt.fit(tr_x, tr_y)
-		filename = 'Decision Tree_' + str_num
-		show(filename, dt, dv.get_feature_names(), le.classes_)
-
-		#Testing decision tree
-		dt_result = dt.predict(te_x)
-		dt_result_labels = le.inverse_transform(dt_result)
-
-		#Build random forest
-		rf = RandomForestClassifier()
-		rf = dt.fit(tr_x, tr_y)
-		filename = 'Random Forest_' + str_num
-		show(filename, rf, dv.get_feature_names(), le.classes_)
-
-		#Testing random forest
-		rf_result = rf.predict(te_x)
-		rf_result_labels = le.inverse_transform(rf_result)
-
-		#Evaluation
-		print('\n Golden Classifier Result-' + str_num)
-		evaluate(TE_Y, g_result)
-		print('\n Decision Tree Result-' + str_num)
-		evaluate(TE_Y, dt_result_labels)
-		print('\n Random Forest Result-' + str_num)
-		evaluate(TE_Y, rf_result_labels)
+	#Data size experiment
+	for size in np.linspace(0.7, 0.1, 7):
+		TR_X, TR_Y, TE_X, TE_Y = open_mushroom(size)
+		run_exp(TR_X, TR_Y, TE_X, TE_Y)
