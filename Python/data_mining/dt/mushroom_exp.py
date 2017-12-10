@@ -36,7 +36,8 @@ CON_DICT = {
 				'stalk-root': ['b', 'u'],
 				'spore-print-color': ['w'],
 				'ring-number': ['o', 'r'],
-				'gill-size': ['n', 'w']
+				'gill-size': ['n'],
+				'gill-color': ['w']
 }
 
 
@@ -214,7 +215,7 @@ if __name__ == '__main__':
 		filter_tr_x = filter_tr_x.drop([attr], axis=1)
 		filter_te_x = filter_te_x.drop([attr], axis=1)
 
-		run_exp(filter_tr_x, TR_Y, filter_te_x,TE_Y)	
+		run_exp(filter_tr_x, TR_Y, filter_te_x, TE_Y)
 
 	#Data size experiment
 	for size in np.linspace(0.7, 0.1, 7):
