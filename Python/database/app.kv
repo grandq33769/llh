@@ -50,33 +50,30 @@
         Rectangle:
             size: self.size
             pos: self.pos
-
-    DropDown:
-        id: add
-        size_hint_x: 0.4
-        on_select: btn.text = '{}'.format(args[1])
-        Button:
-            text: 'Attribute'
-            height: 44
-            on_release: add.open()
-
+ 
+	Button:
+        id: attrbtn
+		text: 'Attribute'
+        size_hint_x: 0.6
+		height: 44
+        on_press: root.parent.parent.build_attr(attrbtn)
  
 	Button:
         id: abtn
+        size_hint_x: 0.4
 		text: 'Aggregate Function'
 		height: 44
-		on_release: cdd.open(abtn)       
+		on_press: root.parent.parent.connect(abtn)
 
-    DropDown:
 	TextInput:
 		id: con_value
-        size_hint_x: 0.1
+        size_hint_x: 0.4
 		hint_text: 'Fill Condition'
 
     Button:
         text: '+'
         size_hint_x: 0.1
-        on_press: root.add()
+        on_press: root.parent.parent.add()
         
 <AggregateDropDown>:
 	Button:

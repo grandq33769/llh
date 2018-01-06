@@ -46,7 +46,7 @@ class Table(BoxLayout):
                             {'value':str(sys.exc_info()[1])}]
 
     def conditions(self):
-       popup = ConditionPopup(main=self)
+       popup = ConditionPopup(main=self, db=self.db, select_tab=None)
        popup.open()
 		
     def clear(self):
@@ -108,7 +108,7 @@ class MiniPopup(Popup):
         where_str = where_str[:-4]
         
         comm = comm.format(self.tab,set_str,where_str)
-
+        print(comm)
         try:
            self.db.query(comm)
         except:
@@ -208,6 +208,7 @@ class InsertPopup(DBPopup):
         if hasattr(self, 'select_tab') and result != []:
             comm = comm.format(self.select_tab, ','.join(result)) 
 
+            print(comm)
             try:
                self.db.query(comm)
             except:
@@ -250,18 +251,70 @@ class DeletePopup(DBPopup):
         super(DeletePopup, self).confirm()
 
 class ConditionPopup(DBPopup):
-    def __init__(self, **kwargs):
-        self.con = CV()
+    def __init__(self, db, select_tab, **kwargs):
+        self.con = CV(db=db)
+        self.select_tab = select_tab
         super(ConditionPopup, self).__init__(title='Condtional Query',
                                              middle=self.con,
                                              **kwargs)
+        if select_tab != None:
+              self._show()
 
     def show_table(self, instance, x):
         super(ConditionPopup, self).show_table(instance, x)
+        popup = ConditionPopup(main=self.caller,
+                               db=self.db,  
+                               select_tab=str(self.select_tab))
+        popup.open()
+        self.dismiss()
+        
+    def _show(self):
         a,_ = self.db.query('Select * from '+self.select_tab+';')
         self.attr = a
         #print(a)
-        self.con.data = [{'value':v} for v in a]
+        self.con.data = [{'value':''}]
+        self.con.change(a)
+        self.dbtn.text = self.select_tab
+
+
+    def confirm(self, x):
+        # print(self.con.children[0].children)
+        value = [[],[],[]]
+        ids = ['attrbtn','abtn','con_value']
+        comm = "SELECT {} FROM " + self.select_tab
+        if hasattr(self, 'select_tab'):
+             for lab in self.con.children[0].children:
+                 for l,i in zip(value, ids):
+                     l.append(lab.ids[i].text)
+                 
+        cstr = ''
+        hstr = ' HAVING '
+        has_h = False
+        for attr, agg, v in zip(*value):
+             if attr == 'Attribute':
+                  continue
+             elif agg == 'Aggregate Function':
+                  cstr += '{},'.format(attr)
+             elif agg != 'HAVING':
+                  cstr += '{}({}),'.format(agg,attr) 
+             else: 
+                  has_h = True
+                  hstr += '{}{},'.format(attr,v)
+             
+        if cstr=='': cstr = '* '
+        if has_h:
+             comm = comm.format(cstr[:-1]) + hstr[:-1]
+        else:
+             comm = comm.format(cstr[:-1])
+ 
+        print(comm)
+        try:
+            self.caller.execute(comm)
+        except:
+            print(str(sys.exc_info()[1]))
+       
+        self.dismiss()
+
 
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
@@ -308,21 +361,31 @@ class UV(RecycleView):
         super(UV, self).__init__(**kwargs)
 
 class CV(RecycleView):
-    def __init__(self, **kwargs):
-
-        '''
-        dropdown = DropDown()
-        for a in r:
-             btn = Button(text='{}'.format(str(a[0]))  , size_hint_y=None)
-             btn.bind(on_release=lambda btn: dropdown.select(btn.text))
-             dropdown.add_widget(btn)
-        self.dbtn = Button(text='Relations', size_hint=(1, 0.2))
-        self.dbtn.bind(on_release=dropdown.open)
-        dropdown.bind(on_select=self.show_table)
-        '''
-
+    def __init__(self, db, **kwargs):
+        self.db = db
+        self.attr = ''
         super(CV, self).__init__(**kwargs)
+        
+    def connect(self, btn):
+        add = AggregateDropDown()
+        btn.bind(on_release=add.open)
+        add.bind(on_select=lambda instance, x: setattr(btn, 'text', x))
 
+    def build_attr(self, dbtn):
+        dd = DropDown()
+        for a in self.attr:
+             btn = Button(text='{}'.format(str(a))  , size_hint_y=None)
+             btn.bind(on_release=lambda btn: dd.select(btn.text))
+             dd.add_widget(btn)
+        dbtn.bind(on_release=dd.open)
+        dd.bind(on_select=lambda instance, x: setattr(dbtn, 'text', x))
+
+    def change(self, attr):
+        self.attr = attr
+
+    def add(self):
+        self.data.append({'value':''})
+    
 class AggregateDropDown(DropDown):
 	pass
 
