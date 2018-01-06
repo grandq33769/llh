@@ -1,0 +1,228 @@
+<Row@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    value: ''
+    Label:
+        text: root.value
+
+<Row2@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    value: ''
+    Label:
+        text: root.value
+	TextInput:
+		id: insert_input
+		hint_text: 'Fill in Data'
+
+<Row3@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    attr: ''
+    value: ''
+	Label:
+        text: root.attr
+    Label:
+        text: root.value
+	TextInput:
+		id: insert_input
+		hint_text: 'Fill in Data'
+
+<Row4@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    DropDown:
+        id: add
+        size_hint_x: 0.4
+        on_select: btn.text = '{}'.format(args[1])
+        Button:
+            text: 'Attribute'
+            height: 44
+            on_release: add.open()
+
+ 
+	Button:
+        id: abtn
+		text: 'Aggregate Function'
+		height: 44
+		on_release: cdd.open(abtn)       
+
+    DropDown:
+	TextInput:
+		id: con_value
+        size_hint_x: 0.1
+		hint_text: 'Fill Condition'
+
+    Button:
+        text: '+'
+        size_hint_x: 0.1
+        on_press: root.add()
+        
+<AggregateDropDown>:
+	Button:
+		text: 'COUNT'
+		size_hint_y: None
+		height: 44
+		on_release: root.select('COUNT')
+
+	Button:
+		text: 'SUM'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('SUM')
+
+	Button:
+		text: 'MAX'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('MAX')
+
+	Button:
+		text: 'MIN'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('MIN')
+
+	Button:
+		text: 'AVG'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('AVG')
+
+	Button:
+		text: 'HAVING'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('HAVING')
+
+
+<CV>:
+	viewclass: 'Row4'
+	RecycleGridLayout:
+        cols:1
+		default_size: None, dp(56)
+		default_size_hint: 1, None
+		size_hint_y: None
+		height: self.minimum_height
+		orientation: 'vertical'
+		spacing: dp(2)
+
+<UV>:
+	viewclass: 'Row3'
+	RecycleGridLayout:
+        cols:1
+		default_size: None, dp(56)
+		default_size_hint: 1, None
+		size_hint_y: None
+		height: self.minimum_height
+		orientation: 'vertical'
+		spacing: dp(2)
+
+
+<IV>:
+	viewclass: 'Row2'
+	RecycleGridLayout:
+        cols:1
+		default_size: None, dp(56)
+		default_size_hint: 1, None
+		size_hint_y: None
+		height: self.minimum_height
+		orientation: 'vertical'
+		spacing: dp(2)
+
+<RV>:
+    viewclass: 'SelectableLabel'
+    SelectableRecycleBoxLayout:
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+
+<SelectableLabel>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<Table>:
+    canvas:
+        Color:
+            rgba: 0.3, 0.3, 0.3, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    rv: rv
+	rgl: rgl
+    sqlinput: sqlinput
+    orientation: 'vertical'
+	TextInput:
+		id: sqlinput
+		size_hint_y: 0.1
+		hint_text: 'Key in SQL Query'
+		padding: dp(10)
+		
+	GridLayout:
+		cols: 3
+		rows: 2
+		size_hint_y: None
+		height: dp(108)
+		padding: dp(8)
+		spacing: dp(16)
+		Button:
+			text: 'Execute SQL'
+			on_press: root.execute()
+		Button:
+			text: 'Conditions'
+			on_press: root.conditions()
+		Button:
+			text: 'Clear'
+			on_press: root.clear()
+		Button:
+			text: 'Delete'
+			on_press: root.delete()
+		Button:
+			text: 'Insert'
+			on_press: root.insert()
+		Button:
+			text: 'Update'
+			on_press: root.update()
+
+	RecycleView:
+		id: rv
+		scroll_type: ['bars', 'content']
+		scroll_wheel_distance: dp(114)
+		bar_width: dp(10)
+		viewclass: 'Row'
+		RecycleGridLayout:
+			id: rgl
+			cols: 1
+			default_size: None, dp(56)
+			default_size_hint: 1, None
+			size_hint_y: None
+			height: self.minimum_height
+			orientation: 'vertical'
+			spacing: dp(2)
