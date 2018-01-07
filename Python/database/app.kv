@@ -74,7 +74,66 @@
         text: '+'
         size_hint_x: 0.1
         on_press: root.parent.parent.add()
-        
+
+<Row5@BoxLayout>:
+    canvas.before:
+        Color:
+            rgba: 0.5, 0.5, 0.5, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+ 
+	Button:
+        id: attrbtn
+		text: 'Attribute'
+        size_hint_x: 0.2
+		height: 44
+        on_press: root.parent.parent.build_attr(attrbtn)
+ 
+	Button:
+        id: ebtn
+        size_hint_x: 0.2
+		text: 'Nested Function'
+		height: 44
+		on_press: root.parent.parent.connect(ebtn)
+
+	Button:
+		id: o_tabbtn 
+        size_hint_x: 0.2
+		text: 'Other Relation'
+        height: 44
+		on_press: root.parent.parent.build_relation(o_tabbtn)
+
+    Button:
+        id: o_attrbtn
+        size_hint_x: 0.2
+        text: 'Other Attribute'
+         
+<ExistDropDown>:
+	Button:
+		text: 'IN'
+		size_hint_y: None
+		height: 44
+		on_release: root.select('IN')
+
+	Button:
+		text: 'NOT IN'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('NOT IN')
+
+	Button:
+		text: 'EXISTS'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('EXISTS')
+
+	Button:
+		text: 'NOT EXISTS'
+        size_hint_y: None
+		height: 44
+		on_release: root.select('NOT EXISTS')
+       
 <AggregateDropDown>:
 	Button:
 		text: 'COUNT'
@@ -111,6 +170,17 @@
         size_hint_y: None
 		height: 44
 		on_release: root.select('HAVING')
+
+<EV>:
+	viewclass: 'Row5'
+	RecycleGridLayout:
+        cols:1
+		default_size: None, dp(56)
+		default_size_hint: 1, None
+		size_hint_y: None
+		height: self.minimum_height
+		orientation: 'vertical'
+		spacing: dp(2)
 
 
 <CV>:
@@ -176,11 +246,21 @@
 	rgl: rgl
     sqlinput: sqlinput
     orientation: 'vertical'
-	TextInput:
-		id: sqlinput
-		size_hint_y: 0.1
-		hint_text: 'Key in SQL Query'
-		padding: dp(10)
+	GridLayout:
+		cols: 2
+        size_hint_y: 0.1
+		padding: dp(8)
+		spacing: dp(16)
+		TextInput:
+			id: sqlinput
+			size_hint_x: 0.9
+			hint_text: 'Key in SQL Query'
+			padding: dp(10)
+
+		Button:
+			text: 'Execute SQL'
+			size_hint_x: 0.1
+            on_press: root.execute()
 		
 	GridLayout:
 		cols: 3
@@ -190,8 +270,8 @@
 		padding: dp(8)
 		spacing: dp(16)
 		Button:
-			text: 'Execute SQL'
-			on_press: root.execute()
+			text: 'Existency'
+			on_press: root.exist()
 		Button:
 			text: 'Conditions'
 			on_press: root.conditions()

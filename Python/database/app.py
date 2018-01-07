@@ -64,6 +64,10 @@ class Table(BoxLayout):
        popup = UpdatePopup(main=self)
        popup.open()
 
+    def exist(self):
+       popup = ExistPopup(main=self, db=self.db, select_tab=None)
+       popup.open()
+
 class MiniPopup(Popup):
     def __init__(self, db, tab, attr, value, caller, **kwargs):
 
@@ -115,11 +119,13 @@ class MiniPopup(Popup):
            print(str(sys.exc_info()[1]))
 
         self.caller.execute('SELECT * FROM {};'.format(self.tab))
+        self.caller.sqlinput.text = comm
+        
         self.dismiss()
 
 
 class DBPopup(Popup):
-    def __init__(self, main, middle,**kwargs):
+    def __init__(self, main, middle, size=(1200, 1000), **kwargs):
         self.caller = main
         self.db = main.db
         _,r = self.db.query(
@@ -141,7 +147,7 @@ class DBPopup(Popup):
         box.add_widget(btn)
 
         super(DBPopup, self).__init__(content=box,
-                                    size_hint=(None, None), size=(1200, 1000),
+                                    size_hint=(None, None), size=size,
                                     **kwargs)
 
         btn.bind(on_press=self.confirm)
@@ -210,6 +216,7 @@ class InsertPopup(DBPopup):
 
             print(comm)
             try:
+               self.caller.sqlinput.text = comm
                self.db.query(comm)
             except:
                print(str(sys.exc_info()[1]))
@@ -244,6 +251,7 @@ class DeletePopup(DBPopup):
                       comm = comm[:-4]+';'
                       print(comm)
                       try:
+                         self.caller.sqlinput.text = comm
                          self.db.query(comm)
                       except:
                          print(str(sys.exc_info()[1]))
@@ -307,8 +315,10 @@ class ConditionPopup(DBPopup):
         else:
              comm = comm.format(cstr[:-1])
  
+        comm += ';'
         print(comm)
         try:
+            self.caller.sqlinput.text = comm
             self.caller.execute(comm)
         except:
             print(str(sys.exc_info()[1]))
@@ -316,6 +326,33 @@ class ConditionPopup(DBPopup):
         self.dismiss()
 
 
+class ExistPopup(DBPopup):
+    def __init__(self, db, select_tab, **kwargs):
+        self.ev = EV(db=db)
+        self.select_tab = select_tab
+        super(ExistPopup, self).__init__(title='Existentcy',
+                                         middle=self.ev,
+                                         size=(1200,400),
+                                         **kwargs)
+
+        if select_tab != None:
+              self._show()
+
+    def show_table(self, instance, x):
+        super(ExistPopup, self).show_table(instance, x)
+        popup = ExistPopup(main=self.caller,
+                           db=self.db,  
+                           select_tab=str(self.select_tab))
+        popup.open()
+        self.dismiss()
+        
+    def _show(self):
+        a,_ = self.db.query('Select * from '+self.select_tab+';')
+        self.attr = a
+        #print(a)
+        self.ev.data = [{'value':''}]
+        self.ev.change(a)
+        self.dbtn.text = self.select_tab
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
@@ -386,6 +423,71 @@ class CV(RecycleView):
     def add(self):
         self.data.append({'value':''})
     
+class EV(RecycleView):
+    def __init__(self, db, **kwargs):
+        self.db = db
+        self.edd = None
+        self.odd = None
+        self.attr = ''
+        super(EV, self).__init__(**kwargs)
+
+    def connect(self, btn):
+        edd = ExistDropDown()
+        btn.bind(on_release=edd.open)
+        edd.bind(on_select=lambda instance, x: setattr(btn, 'text', x))
+
+    def build_attr(self, dbtn):
+        dd = DropDown()
+        for a in self.attr:
+             btn = Button(text='{}'.format(str(a))  , size_hint_y=None)
+             btn.bind(on_release=lambda btn: dd.select(btn.text))
+             dd.add_widget(btn)
+        dbtn.bind(on_release=dd.open)
+        dd.bind(on_select=lambda instance, x: setattr(dbtn, 'text', x))
+
+    def build_relation(self, dbtn):
+         if self.edd == None:
+             _,r = self.db.query('SELECT table_name FROM information_schema.tables \
+                                 where table_schema=\'MFCom\';')
+
+             self.edd = DropDown()
+             for a in r:
+                 btn = Button(text='{}'.format(str(a[0]))  , size_hint_y=None)
+                 btn.bind(on_release=lambda btn: self.edd.select(btn.text))
+                 self.edd.add_widget(btn)
+             dbtn.bind(on_release=self.edd.open)
+             self.edd.bind(on_select=lambda instance, x: self.build_oattr(instance, x ,dbtn))
+             self.edd.bind(on_select=lambda instance, x: setattr(dbtn, 'text',x))
+
+    def build_oattr(self, instance, x, dbtn):
+        # print(instance, x)
+        a,_ = self.db.query('SELECT * FROM {}'.format(x))
+        tbtn = dbtn.parent.ids['o_attrbtn']
+        if self.odd == None:
+             self.odd = DropDown()
+             self._build(self.odd, a)
+             tbtn.bind(on_release=self.odd.open)
+             self.odd.bind(on_select=lambda instance, x: setattr(tbtn, 'text',x))
+        else:
+             self.odd.unbind()
+             self._build(self.odd, a)     
+             self.odd.bind(on_select=lambda instance, x: setattr(tbtn, 'text',x))
+             tbtn.text = 'Other Attribute'
+
+    def _build(self, dd, r):
+        dd.clear_widgets()
+        for a in r:
+             btn = Button(text='{}'.format(str(a))  , size_hint_y=None)
+             btn.bind(on_release=lambda btn: dd.select(btn.text))
+             dd.add_widget(btn)
+
+    def change(self, attr):
+        self.attr = attr
+
+
+class ExistDropDown(DropDown):
+	pass
+
 class AggregateDropDown(DropDown):
 	pass
 
