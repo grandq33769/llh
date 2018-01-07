@@ -286,6 +286,9 @@ class ConditionPopup(DBPopup):
 
 
     def confirm(self, x):
+        if self.select_tab is None:
+             self.dismiss()
+             return
         # print(self.con.children[0].children)
         value = [[],[],[]]
         ids = ['attrbtn','abtn','con_value']
@@ -353,6 +356,49 @@ class ExistPopup(DBPopup):
         self.ev.data = [{'value':''}]
         self.ev.change(a)
         self.dbtn.text = self.select_tab
+
+    def confirm(self, x):
+
+        if len(self.ev.children[0].children) == 0:
+            self.dismiss()
+            return
+
+        ids = ['attrbtn', 'ebtn', 'o_tabbtn', 'o_attrbtn']
+        contents = {i:self.ev.children[0].children[0].ids[i].text for i in ids}
+        contents.update({'select_tab':self.select_tab})
+ 
+        if contents['ebtn']=='IN' or contents['ebtn']=='NOT IN':
+             comm = 'SELECT * FROM {} WHERE {}.{} {} (SELECT {} FROM {})'
+             comm = comm.format(contents['select_tab'], 
+                                contents['select_tab'],
+                                contents['attrbtn'],
+                                contents['ebtn'],
+                                contents['o_attrbtn'],
+                                contents['o_tabbtn'])
+
+        elif contents['ebtn']=='EXISTS' or contents['ebtn']=='NOT EXISTS': 
+             comm = 'SELECT * FROM {} WHERE {} (SELECT * FROM {} WHERE {}.{}={}.{})'
+             comm = comm.format(contents['select_tab'],
+                                contents['ebtn'],
+                                contents['o_tabbtn'],
+                                contents['select_tab'],
+                                contents['attrbtn'],
+                                contents['o_tabbtn'],
+                                contents['o_attrbtn'])
+
+        else:
+             return
+             
+
+        print(comm)
+        try:
+            self.caller.sqlinput.text = comm
+            self.caller.execute(comm)
+        except:
+            print(str(sys.exc_info()[1]))
+ 
+        self.dismiss()
+       
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
