@@ -8,3 +8,5 @@
 **/*.xlsx
 **/*.txt
 __pycache__/**
+Python/database/templates/*
+Python/database/test/*
