@@ -1,3 +1,5 @@
+import sys
+import re
 from collections import namedtuple
 from itertools import tee
 import numpy as np
@@ -5,9 +7,19 @@ import pandas as pd
 from orangecontrib.associate.fpgrowth import * 
 
 BOUNDARY = namedtuple('Boundary', ['max', 'min'])
-LEVELS = list(range(1,16))
+LEVELS = {'budget': 10000,
+          'popularity': 10000,
+          'release_date': 10,
+          'revenue': 10000,
+          'runtime': 100,
+          'vote_average': 10,
+          'vote_count': 14}
+
+DROP_COLS = ['title','original_title']
 
 FILE_PATH = ('movies_metadata_2.csv')
+
+ATTRIBUTE = dict()
 
 def rescale(values):
 	'''
@@ -20,8 +32,11 @@ def rescale(values):
     '''
 	bound = BOUNDARY(max(values), min(values))
 	print('{} max:{} min:{}'.format(values.name, bound.max, bound.min))
-	intervals = list(np.linspace(bound.min, bound.max, len(LEVELS) + 1))
-	print('Intervals:',intervals)
+	intervals = list(np.linspace(bound.min, bound.max, LEVELS[values.name] + 1))
+	intervals = [int(i) for i in intervals]
+	for i,interval in enumerate(pairwise(intervals)):
+		print(str(i+1),interval)
+
 	return values.transform(lambda x: (x - bound.min) / (bound.max - bound.min))
 
 
@@ -68,7 +83,16 @@ def _split(value):
 	split = value.split(':')
 	header = split[0]	
 	contents = split[1].split(',')
-	return  [':'.join([header,c]) for c in contents]
+	for c in contents:
+		if c!= 'nan':
+			try:
+				ATTRIBUTE[header].add(c)
+			except:
+				ts = set()
+				ts.add(c)
+				ATTRIBUTE.update({header:ts})
+			
+	return  [':'.join([header,c]) for c in contents if c != 'nan']
 
 def split(dataframe):
 	'''
@@ -96,18 +120,23 @@ def preprocess(projection=True, attr_n=True):
 	dfm = pd.read_csv(FILE_PATH)
 	# dfm.drop(['title', 'original_title'], axis=1, inplace=True)
 	dfm.set_index('id', inplace=True)
+	dfm.drop(columns=DROP_COLS, inplace=True)
 	
 	min_v = min(dfm['release_date'])
 	dfm['release_date'] = dfm['release_date'].replace('None', str(min_v))
 	dfm['release_date'] = dfm['release_date'].transform(lambda x: x[:4])
 	dfm['release_date'] = dfm['release_date'].astype('int64')
 
-	dfm[dfm.release_date > 2017].to_csv('exception.csv')
+	# dfm[dfm.release_date > 2017].to_csv('exception.csv')
+	print('Attribute len:',len(dfm.columns))
+	print(dfm.columns)
+	print(dfm.dtypes)
+	a = (dfm.dtypes==np.int64)|(dfm.dtypes==np.float64)
 	for attr in dfm.columns:
 		if dfm[attr].dtype == np.int64 or dfm[attr].dtype == np.float64:
 			dfm[attr] = rescale(dfm[attr])
 			if projection:
-				dfm[attr] = project(dfm[attr], LEVELS)
+				dfm[attr] = project(dfm[attr], list(range(1,LEVELS[attr]+1)))
 		if attr_n:
 			dfm[attr] = dfm[attr].transform(lambda x, a=attr: a + ':' + str(x))
 
@@ -117,8 +146,33 @@ if __name__ == '__main__':
 	clean = preprocess()
 	itemsets = dict(frequent_itemsets(clean, 0.05))
 	# print(itemsets)
-	rules = list(association_rules(itemsets, 0.9))
-	'''
-	for rule in rules:
-		print(rule)
-	'''	
+	rules = list(association_rules(itemsets, 0.7))
+	for k,v in ATTRIBUTE.items():
+		print(k)
+		print(v)
+		print(len(v))
+
+	with open('association_rule.csv','w') as f:
+		for rule in rules:
+			skip = True 
+			for i in rule[0]:
+				if re.match('genres.*',i):
+					skip = False
+					break
+			if skip: continue
+
+			skip = True
+			for i in rule[1]:
+				if re.match('revenue.*',i):
+					skip = False	
+					break
+			if skip: continue
+
+			out = []
+			for v in rule:
+			
+				if isinstance(v,frozenset):
+					out.append('   '.join(v))
+				else:
+					out.append(str(v))
+			f.write(','.join(out)+'\n')
