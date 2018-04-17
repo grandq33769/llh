@@ -14,7 +14,7 @@ END = {(0, 0), (3, 3)}
 REWARD = -1
 
 
-def value_iteration():
+def policy_iteration():
     # Initialization
     k = 0
     value_table = np.zeros((W, H))
@@ -64,4 +64,4 @@ def coor_verify(coor):
 
 
 if __name__ == '__main__':
-    value_iteration()
+    policy_iteration()
