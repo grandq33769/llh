@@ -1,7 +1,6 @@
 #Ignore file from git
 **/*.pyc
 **/*CodeRunnerFile.py
-**/*.json
 **/*.jpg
 **/*.pickle
 **/*.csv
