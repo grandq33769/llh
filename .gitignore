@@ -4,6 +4,7 @@
 **/*.jpg
 **/*.pickle
 **/*.csv
+**/*.json
 **/*.xlsx
 **/*.txt
 __pycache__/**
