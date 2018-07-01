@@ -13,17 +13,6 @@ FILE = args.source
 COLUMN_NEED = ['area','cunli','Ym','gen']
 # YEAR = [10501, 10502]
 SUFFIX_NAME = '_village.json'
-COUNTY_ENG = {'花蓮': 'Hualien', '澎湖': 'Penghu', '彰化': 'Changhua',
-              '台東': 'Taitung', '宜蘭': 'Yilan', '嘉義': 'Chiayi',
-              '金門': 'Kinmen', '雲林': 'Yunlin', '高雄': 'Kaohsiung',
-              '屏東': 'Pingtung', '台南': 'Tainan', '新竹': 'Hsinchu',
-              '苗栗': 'Miaoli', '台中': 'Taichung', '連江': 'Lienchiang',
-              '南投': 'Nantou', '台北': 'Taipei', '新北': 'NewTaipei',
-              '桃園': 'Taoyuan', '基隆': 'Keelung'}
-
-CITY_IDX = FILE.index('市')
-CITY_NAME = FILE[CITY_IDX-2:CITY_IDX]
-CITY_NAME = COUNTY_ENG[CITY_NAME]
 
 def read(path):
     # Read energy data by using pandas
@@ -114,7 +103,6 @@ if __name__ == '__main__':
     data = replace(data, 'cunli', '村', '里')
     data = replace(data, 'cunli', '■', '部')
     data = replace(data, 'cunli', '部榔', '糠榔')
-    data = replace(data, 'cunli', '溪州里', '溪洲里')
     data = combine(data, ['area', 'cunli'], 'village')
     # print(data.loc[data['village'] == '東山區南勢里'])
     # print(data.loc[data['Ym'] == 10501])
@@ -122,19 +110,16 @@ if __name__ == '__main__':
     # print(data)
     # for yr in YEAR:
     result = convert_dict(data, ['gen'], 'village')
-    '''
     for village,gen in sorted(result.items(), key=lambda kv: -kv[1]['gen']):
         print(village,gen)
-    '''
+
     result.update({"updateAt":time.strftime("%Y/%m/%d", time.localtime())})
     name = ''.join(c for c in FILE if c.isdigit())
     if '上' in FILE:
-        name += '_first_half_'
+        name += 'up'
     elif '下' in FILE:
-        name += '_second_half_'
-    name += CITY_NAME
-
+        name += 'down'
     with open(name+SUFFIX_NAME, 'w', encoding='unicode-escape') as wf:
         json.dump(result, wf, ensure_ascii=False)
-    with open(name+'_village_name.txt', 'w') as wf:
+    with open(name+'村名.txt', 'w') as wf:
         wf.writelines('\n'.join(result.keys()))

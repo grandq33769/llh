@@ -36,7 +36,7 @@
     defaultZoom = _defaultZoom;
     map = new L.Map('map');
 
-    var url = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
+    var url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     var attrib = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>';
     var osm = new L.TileLayer(url, {minZoom: 10,  maxZoom: 19, attribution: attrib});   
 
@@ -46,7 +46,12 @@
   }
 
   function style(feature) {
-    var color = getColor(feature.properties.TOWNNAME+feature.properties.VILLAGENAM);
+    if (typeof feature.properties.VILLAGENAM == 'undefined'){
+      vname = feature.properties.VILLNAME;
+    } else {
+      vname = feature.properties.VILLAGENAM;
+    }
+    var color = getColor(feature.properties.TOWNNAME+vname);
     var fillOpacity = 0.6;
     // console.log($(window).width())
     if ($(window).width() < 600) {
@@ -79,19 +84,24 @@
       mouseover: highlightFeature,
       mouseout: resetHighlight
     });
-
-    var village = feature.properties.TOWNNAME +feature.properties.VILLAGENAM;
+    if (typeof feature.properties.VILLAGENAM == 'undefined'){
+      vname = feature.properties.VILLNAME;
+    } else {
+      vname = feature.properties.VILLAGENAM;
+    }
+    var village = feature.properties.TOWNNAME + vname;
+    // console.log(village)
 
     if (village in data) {
       layer.bindPopup(
         '<div class="village-pop"><span>' + feature.properties.TOWNNAME +
-        ' ' + feature.properties.VILLAGENAM + '</span>'  +
+        ' ' + vname + '</span>'  +
         '<hr/>總售電量：' + data[village].gen + ' ' + '度' +
         '</div>');
     }
     else {
       layer.bindPopup(feature.properties.TOWNNAME +
-        ' ' + feature.properties.VILLAGENAM + '<br/>' +
+        ' ' + vname + '<br/>' +
         '缺失資料');
     }
   }
